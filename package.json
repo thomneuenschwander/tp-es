@@ -1,0 +1,37 @@
+{
+  "name": "tp-es",
+  "version": "1.0.0",
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:frontend": "npm --workspace apps/frontend run dev",
+    "dev:backend": "npm --workspace apps/backend run dev",
+    "cz": "cz",
+    "format": "prettier --write .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomneuenschwander/tp-es.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/thomneuenschwander/tp-es/issues"
+  },
+  "homepage": "https://github.com/thomneuenschwander/tp-es#readme",
+  "devDependencies": {
+    "commitizen": "^4.3.1",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  }
+}
