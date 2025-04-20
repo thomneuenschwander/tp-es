@@ -1,31 +1,59 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { Landing, SigninWrapper, SignupWrapper } from './pages/Landing';
+import AppLayout from './components/AppLayout';
+import Account from './pages/Account';
+import AddressSelection from './pages/AddressSelection';
+import { useEffect, useMemo, useState } from 'react';
+import { createTheme, ThemeProvider } from '@mui/material';
+import PastOrders from './pages/PastOrders';
+import Home from './pages/Home';
+import Cart from './pages/Cart';
+import SelectPizza from './pages/SelectPizza';
+import Drinks from './pages/Drinks';
 
-function App() {
-  const [count, setCount] = useState(0);
+const App = () => {
+  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  useEffect(() => {
+    const savedMode = localStorage.getItem('theme-mode') as 'light' | 'dark' | null;
+    if (savedMode) setMode(savedMode);
+  }, []);
+
+  const toggleTheme = () => {
+    const newMode = mode === 'light' ? 'dark' : 'light';
+    setMode(newMode);
+    localStorage.setItem('theme-mode', newMode);
+  };
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+      }),
+    [mode],
+  );
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    <ThemeProvider theme={theme}>
+      <AppLayout>
+        <Routes>
+          <Route path="/" element={<Landing />}>
+            <Route index element={<Navigate to="login" replace />} />
+            <Route path="signup" element={<SignupWrapper />} />
+            <Route path="login" element={<SigninWrapper />} />
+          </Route>
+          <Route path='/home' element={<Home />} />
+          <Route path="/account" element={<Account toggleTheme={toggleTheme} themeMode={mode}/>} />
+          <Route path="/address" element={<AddressSelection />} />
+          <Route path='/orders' element={<PastOrders />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/pizzas' element={<SelectPizza />} />
+          <Route path='/drinks' element={<Drinks />} />
+        </Routes>
+      </AppLayout>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
