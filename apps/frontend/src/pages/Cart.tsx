@@ -1,32 +1,87 @@
-import { Box, Button, Container, Divider, IconButton, Stack, Typography } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import RemoveIcon from '@mui/icons-material/Remove'
-import DeleteIcon from '@mui/icons-material/Delete'
-import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout'
-import { useCart } from '../contexts/CartContext'
-import BackButton from '../components/BackButton'
+import { useState } from 'react';
+import { Box, Button, Container, Divider, IconButton, Stack, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import { useCart } from '../contexts/CartContext';
+import BackButton from '../components/BackButton';
+import { loadStripe } from '@stripe/stripe-js';
+
+// Inicializa o Stripe com sua chave pública
+const stripePromise = loadStripe('pk_test_51RL9yzKpWMtTtEtQLH7xuo81i0fdXC9HFU7scb8u6XGdSg5mCAKpvwYAN2vwhTWIDVfqNCXwsEDWwZKBwYUS3VNH00HGCMTeZg');
+
+// Interface para os itens do carrinho
+interface CartItem {
+  id: string;
+  type: string;
+  flavor?: string;
+  name?: string;
+  price: number;
+  quantity: number;
+  image: string;
+}
 
 const Cart = () => {
-  const { items, removeItem, addItem } = useCart()
+  const { items, removeItem, addItem } = useCart();
+  const [loading, setLoading] = useState(false);
 
   const updateQuantity = (id: string, delta: number) => {
-    const item = items.find((i) => i.id === id)
-    if (!item) return
+    const item = items.find((i: CartItem) => i.id === id);
+    if (!item) return;
 
-    const newQuantity = item.quantity + delta
+    const newQuantity = item.quantity + delta;
     if (newQuantity <= 0) {
-      removeItem(id)
+      removeItem(id);
     } else {
-      removeItem(id)
-      addItem({ ...item, quantity: newQuantity })
+      removeItem(id);
+      addItem({ ...item, quantity: newQuantity });
     }
-  }
+  };
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
+
+  const handleCheckout = async () => {
+    if (items.length === 0) {
+      alert('Seu carrinho está vazio!');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:3000/pagamentos/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Erro ao criar sessão de checkout: ${JSON.stringify(errorData)}`);
+      }
+
+      const { url, transacaoId } = await response.json();
+
+      if (!url) {
+        throw new Error('URL de checkout não recebida');
+      }
+
+      localStorage.setItem('transacaoId', transacaoId);
+      window.location.href = url;
+    } catch (error: any) {
+      console.error('Erro ao iniciar o checkout:', error);
+      alert(`Erro ao iniciar o checkout: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Box display='flex' gap={1} alignItems="center" mb={2}>
+      <Box display="flex" gap={1} alignItems="center" mb={2}>
         <BackButton />
         <Typography variant="h4" fontWeight="bold" ml={2}>
           Seu Carrinho
@@ -37,7 +92,7 @@ const Cart = () => {
         {items.length === 0 ? (
           <Typography color="text.secondary">Seu carrinho está vazio.</Typography>
         ) : (
-          items.map((item) => (
+          items.map((item: CartItem) => (
             <Box
               key={item.id}
               sx={{
@@ -73,7 +128,7 @@ const Cart = () => {
                   </IconButton>
                 </Stack>
               </Box>
-              <IconButton onClick={() => removeItem(item.id)} color='error'>
+              <IconButton onClick={() => removeItem(item.id)} color="error">
                 <DeleteIcon />
               </IconButton>
             </Box>
@@ -93,14 +148,15 @@ const Cart = () => {
             variant="contained"
             size="large"
             startIcon={<ShoppingCartCheckoutIcon />}
-            onClick={() => alert('Finalizar compra')}
+            onClick={handleCheckout}
+            disabled={loading}
           >
-            Ir para o Pagamento
+            {loading ? 'Processando...' : 'Ir para o Pagamento'}
           </Button>
         </>
       )}
     </Container>
-  )
-}
+  );
+};
 
-export default Cart
+export default Cart;
