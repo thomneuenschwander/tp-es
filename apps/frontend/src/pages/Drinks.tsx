@@ -10,9 +10,11 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { DrinkCartItem, useCart } from '../contexts/CartContext'
+import { NewDrinkItem, useCart } from '../contexts/CartContext'
 import CartSnackbar from '../components/CartSnackbar'
-
+// ICONS
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import { useNavigate } from 'react-router-dom'
 const drinksData = [
   {
     name: 'Coca-Cola',
@@ -36,13 +38,13 @@ const drinksData = [
 
 const Drinks = () => {
   const { addItem, removeItem } = useCart()
-
+  const navigate = useNavigate()
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [addedDrink, setAddedDrink] = useState<string | null>(null)
   const [lastAddedId, setLastAddedId] = useState<string | null>(null)
 
   const handleAddDrink = (drink: (typeof drinksData)[0]) => {
-    const drinkItem: Omit<DrinkCartItem, 'id'> = {
+    const drinkItem: NewDrinkItem = {
       type: 'drink',
       name: drink.name,
       description: drink.description,
@@ -50,12 +52,17 @@ const Drinks = () => {
       image: drink.image,
       quantity: 1,
     }
-
+  
     const id = addItem(drinkItem)
     setLastAddedId(id)
     setAddedDrink(drink.name)
-    setSnackbarOpen(true)
+  
+    setSnackbarOpen(false)
+    setTimeout(() => {
+      setSnackbarOpen(true)
+    }, 100)
   }
+  
 
   return (
     <Container maxWidth="sm" sx={{ py: { xs: 4, sm: 8 } }}>
@@ -86,7 +93,14 @@ const Drinks = () => {
           </Card>
         ))}
       </Stack>
-
+      <Stack mt={4}>
+        <Button variant="outlined" size="large" onClick={() => navigate('/cart')}>
+          <ShoppingCartIcon />
+        </Button>
+        <Button variant="outlined" size="large" onClick={() => navigate('/pizzas')}>
+          Escolher Pizzas
+        </Button>
+      </Stack>
       <CartSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}

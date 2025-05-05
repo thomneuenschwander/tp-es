@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import PizzaTypeCard from '../components/PizzaTypeCard'
-import { PizzaCartItem, useCart } from '../contexts/CartContext'
+import { NewPizzaItem, useCart } from '../contexts/CartContext'
 
 // ICONS
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
@@ -202,7 +202,7 @@ const SelectPizza = () => {
           onClick={() => {
             if (!selectedSize || !selectedFlavor) return
 
-            const pizzaItem: Omit<PizzaCartItem, 'id'> = {
+            const pizzaItem: NewPizzaItem = {
               type: 'pizza',
               flavor: selectedFlavor.label,
               size: selectedSize.label,
@@ -215,7 +215,8 @@ const SelectPizza = () => {
             const id = addItem(pizzaItem)
             setLastAddedId(id)
             setLastPizza({ size, type, extras: customizations })
-            setSnackbarOpen(true)
+            setSnackbarOpen(false)
+            setTimeout(() => setSnackbarOpen(true), 100)
           }}
         >
           Adicionar no Carrinho - R$ {totalPrice.toFixed(2)}
