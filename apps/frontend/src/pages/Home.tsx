@@ -5,12 +5,12 @@ import StorefrontIcon from '@mui/icons-material/Storefront';
 const Home = () => {
   const navigate = useNavigate();
 
-  const blocks = [
+const blocks = [
     { label: 'Escolha sua Pizza', image: '/images/pizzas.png', route: '/pizzas' },
     { label: 'Escolha sua Bebida', image: '/images/drinks.png', route: '/drinks' },
+    { label: 'Nossas Lojas', image: '/images/stores.png', route: '/stores' },
     { label: 'Disponível em Breve...', image: '/images/placeholder.jpg', route: '#' },
-    { label: 'Disponível em Breve...', image: '/images/placeholder.jpg', route: '#' },
-  ];
+];
 
   return (
     <Container
