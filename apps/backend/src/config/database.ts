@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 
-export const sequelize = new Sequelize('pizzaPlanet', 'postgres', '1R341256a@', {
+export const sequelize = new Sequelize('pizzaPlanet', 'postgres', '2210', {
   host: 'localhost',
   dialect: 'postgres',
   define: {
