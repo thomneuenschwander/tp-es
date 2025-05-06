@@ -1,5 +1,6 @@
 import { Router, RequestHandler } from 'express';
 import { PedidoController } from '../controllers/pedido.controller';
+import { authMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -8,5 +9,8 @@ router.get('/', PedidoController.findAll);
 router.get('/:id', PedidoController.findById as RequestHandler);
 router.put('/:id', PedidoController.update as RequestHandler);
 router.delete('/:id', PedidoController.delete as RequestHandler);
+
+// Rota para criar um pedido completo
+router.post('/completo', authMiddleware, PedidoController.createCompleteOrder as RequestHandler);
 
 export default router;
