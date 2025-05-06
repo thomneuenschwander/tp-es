@@ -26,7 +26,7 @@ Cliente.init({
     type: DataTypes.STRING(45)
   },
   senha: {
-    type: DataTypes.STRING(45)
+    type: DataTypes.STRING(100)
   },
   nome: {
     type: DataTypes.STRING(45)

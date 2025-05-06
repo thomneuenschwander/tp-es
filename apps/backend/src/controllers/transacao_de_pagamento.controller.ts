@@ -1,11 +1,18 @@
 import { Request, Response } from 'express';
 import { TransacaoDePagamento } from '../models/transacao_de_pagamento.model';
-import Stripe from 'stripe';
 import { Pedido } from '../models';
+import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-04-30.basil',
-});
+// Instancia condicional do Stripe
+let stripe: Stripe | null = null;
+
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2024-04-10',
+  });
+} else {
+  console.warn('⚠️ STRIPE_SECRET_KEY não definida. Stripe desativado.');
+}
 
 export const TransacaoDePagamentoController = {
   async create(req: Request, res: Response) {
@@ -13,7 +20,10 @@ export const TransacaoDePagamentoController = {
       const result = await TransacaoDePagamento.create(req.body);
       res.status(201).json(result);
     } catch (error) {
-      res.status(400).json({ error: 'Erro ao criar transação de pagamento', details: error });
+      res.status(400).json({
+        error: 'Erro ao criar transação de pagamento',
+        details: error,
+      });
     }
   },
 
@@ -31,19 +41,33 @@ export const TransacaoDePagamentoController = {
 
   async update(req: Request, res: Response) {
     const { id } = req.params;
-    const [updated] = await TransacaoDePagamento.update(req.body, { where: { id } });
-    if (updated) return res.json({ message: 'Transação de pagamento atualizada com sucesso' });
+    const [updated] = await TransacaoDePagamento.update(req.body, {
+      where: { id },
+    });
+    if (updated)
+      return res.json({
+        message: 'Transação de pagamento atualizada com sucesso',
+      });
     res.status(404).json({ error: 'Transação de pagamento não encontrada' });
   },
 
   async delete(req: Request, res: Response) {
     const { id } = req.params;
     const deleted = await TransacaoDePagamento.destroy({ where: { id } });
-    if (deleted) return res.json({ message: 'Transação de pagamento removida com sucesso' });
+    if (deleted)
+      return res.json({
+        message: 'Transação de pagamento removida com sucesso',
+      });
     res.status(404).json({ error: 'Transação de pagamento não encontrada' });
   },
 
   async createCheckoutSession(req: Request, res: Response) {
+    if (!stripe) {
+      return res.status(503).json({
+        error: 'Stripe não configurado. Serviço de pagamento indisponível.',
+      });
+    }
+
     const { items } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -51,14 +75,17 @@ export const TransacaoDePagamentoController = {
     }
 
     try {
-      const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+      const total = items.reduce(
+        (sum: number, item: any) => sum + item.price * item.quantity,
+        0
+      );
 
       const pedido = await Pedido.create({
         valorTotal: total,
         status: 'pending',
-        endereco: 'Endereço não informado', 
-        cpfCliente: '111', 
-        idRestaurante: 1, 
+        endereco: 'Endereço não informado',
+        cpfCliente: '111',
+        idRestaurante: 1,
         data: new Date(),
       });
 
@@ -77,7 +104,8 @@ export const TransacaoDePagamentoController = {
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
-        success_url: 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
+        success_url:
+          'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
         cancel_url: 'http://localhost:3000/cart',
         metadata: {
           pedidoIdPedido: pedido.idPedido.toString(),
@@ -96,14 +124,26 @@ export const TransacaoDePagamentoController = {
         data: new Date(),
       });
 
-      res.json({ url: session.url, transacaoId: transacao.idTransacaoPagamento });
-    } catch (error:any) {
+      res.json({
+        url: session.url,
+        transacaoId: transacao.idTransacaoPagamento,
+      });
+    } catch (error: any) {
       console.error('Erro ao criar sessão de checkout:', error);
-      res.status(500).json({ error: 'Erro ao criar sessão de checkout', details: error.message });
+      res.status(500).json({
+        error: 'Erro ao criar sessão de checkout',
+        details: error.message,
+      });
     }
   },
 
   async verifySession(req: Request, res: Response) {
+    if (!stripe) {
+      return res.status(503).json({
+        error: 'Stripe não configurado. Serviço de pagamento indisponível.',
+      });
+    }
+
     const { session_id } = req.query;
 
     if (!session_id || typeof session_id !== 'string') {
@@ -130,7 +170,10 @@ export const TransacaoDePagamentoController = {
       res.json({ status: session.payment_status, transacao });
     } catch (error: any) {
       console.error('Erro ao verificar sessão:', error);
-      res.status(500).json({ error: 'Erro ao verificar sessão', details: error.message });
+      res.status(500).json({
+        error: 'Erro ao verificar sessão',
+        details: error.message,
+      });
     }
   },
 };

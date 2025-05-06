@@ -15,6 +15,7 @@ export class Bebida extends Model<
   declare nome: string;
   declare descricao: string;
   declare preco: number;
+  declare imagem: string;
 }
 
 Bebida.init({
@@ -31,6 +32,9 @@ Bebida.init({
   },
   preco: {
     type: DataTypes.REAL
+  },
+  imagem: {
+    type: DataTypes.STRING(100)
   }
 }, {
   sequelize,

@@ -1,121 +1,121 @@
-import {
-    sequelize,
-    Cliente,
-    Restaurante,
-    Pedido,
-    Pizza,
-    ItemDePedido,
-    Bebida,
-    BebidaDoPedido,
-    Adicional,
-    AdicionalDePedido,
-    TransacaoDePagamento
-  } from '../models/index'; // ✅ Importa tudo centralizado via index.ts
-  
-  async function seed() {
-    try {
-      await sequelize.sync({ force: true }); // ⚠️ Apaga e recria tabelas
-  
-      // 1. Cliente
-      const cliente = await Cliente.create({
-        cpf: '12345678901',
-        email: 'cliente@example.com',
-        senha: 'senha123',
-        nome: 'João Silva',
-        telefone: '31999999999'
-      });
-  
-      // 2. Restaurante
-      const restaurante = await Restaurante.create({
-        nome: 'Pizza App - Savassi',
-        descricao: 'R. Cláudio Manoel, 1162 - Savassi, Belo Horizonte - MG',
-        latitude: -19.936039,
-        longitude: -43.932361
-      });
+import dotenv from 'dotenv';
+dotenv.config({ path: '../.env' }); // ajuste se necessário
 
-      // 2. Restaurante adicional
-      const restauranteAdicional = await Restaurante.create({
-        nome: 'Pizza App - Centro',
-        descricao: 'Av. Afonso Pena, 1000 - Centro, Belo Horizonte - MG',
-        latitude: -19.9191,
-        longitude: -43.9383
-      });
-      
-      // 2. Restaurante adicional
-      const restauranteAdicional2 = await Restaurante.create({
-        nome: 'Pizza App - Pampulha',
-        descricao: 'Av. Otacílio Negrão de Lima, 1000 - Pampulha, Belo Horizonte - MG',
-        latitude: -19.8661,
-        longitude: -43.9733
-      });
-  
-      // 3. Pizza
-      const pizza = await Pizza.create({
-        nome: 'Calabresa',
+import { sequelize } from '../config/database';
+import { Cliente, Pizza, Bebida, Restaurante, Adicional } from '../models';
+
+async function seed() {
+  try {
+    console.log('🔍 Sequelize env vars:', {
+      DB_NAME: process.env.DB_NAME,
+      DB_USER: process.env.DB_USER,
+      DB_PASSWORD: process.env.DB_PASSWORD,
+      DB_HOST: process.env.DB_HOST,
+    });
+
+    await sequelize.authenticate();
+    console.log('✅ Conectado com sucesso');
+
+    await sequelize.sync({ alter: true });
+    console.log('✅ Modelos sincronizados');
+
+    await Cliente.create({
+      cpf: '11122233344',
+      nome: 'Usuário Teste',
+      email: 'teste@example.com',
+      senha: 'senha123',
+      telefone: '31999999999',
+    });
+
+    console.log('✅ Cliente criado com sucesso!');
+
+    await Pizza.bulkCreate([
+      {
+        nome: 'Margherita',
+        slug: 'margherita',
         tamanho: 'M',
-        preco: 39.9,
-        descricao: 'Pizza de calabresa com cebola'
-      });
-  
-      // 4. Bebida
-      const bebida = await Bebida.create({
-        nome: 'Coca-Cola 2L',
-        descricao: 'Refrigerante gelado',
-        preco: 9.5
-      });
-  
-      // 5. Adicional
-      const adicional = await Adicional.create({
+        preco: 30,
+        descricao: 'Molho de tomate, muçarela e manjericão.'
+      },
+      {
+        nome: 'Pepperoni',
+        slug: 'pepperoni',
+        tamanho: 'M',
+        preco: 36,
+        descricao: 'Pepperoni crocante sobre queijo derretido.'
+      },
+      {
+        nome: 'Vegetariana',
+        slug: 'vegetarian',
+        tamanho: 'M',
+        preco: 34,
+        descricao: 'Mix de legumes frescos com muçarela.'
+      }
+    ]);
+
+    console.log('✅ Pizzas criadas com sucesso!');
+
+    await Bebida.bulkCreate([
+      {
+        nome: 'Coca-Cola',
+        descricao: 'Refrigerante 350ml',
+        preco: 5.0,
+        imagem: '/images/coca.png'
+      },
+      {
+        nome: 'Suco de Laranja',
+        descricao: 'Suco natural gelado',
+        preco: 7.0,
+        imagem: '/images/orange_juice.png'
+      },
+      {
+        nome: 'Água Mineral',
+        descricao: 'Sem gás, 500ml',
+        preco: 3.5,
+        imagem: '/images/water.png'
+      }
+    ]);
+    
+
+    console.log('✅ Bebidas criadas com sucesso!');
+
+    await Restaurante.create({
+      nome: 'Pizza Master',
+      descricao: 'A melhor pizzaria da cidade',
+      latitude: -19.9245,
+      longitude: -43.9352
+    })    
+    
+    console.log('✅ Restaurante criado com sucesso!')
+
+    await Adicional.bulkCreate([
+      {
         nome: 'Borda Recheada',
-        descricao: 'Borda com catupiry',
-        preco: 5.0
-      });
-  
-      // 6. Pedido
-      const pedido = await Pedido.create({
-        preco: 54.4,
-        status: 'Em preparo',
-        endereco: 'Rua das Pizzas, 123',
-        cpfCliente: cliente.cpf,
-        idRestaurante: restaurante.idRestaurante
-      });
-  
-      // 7. Item de Pedido
-      await ItemDePedido.create({
-        quantidade: 1,
-        idPedido: pedido.idPedido,
-        idPizza: pizza.idPizza
-      });
-  
-      // 8. Bebida do Pedido
-      await BebidaDoPedido.create({
-        quantidade: 1,
-        idPedido: pedido.idPedido,
-        idBebida: bebida.idBebida
-      });
-  
-      // 9. Adicional do Pedido
-      await AdicionalDePedido.create({
-        quantidade: 1,
-        pedidoIdPedido: pedido.idPedido,
-        adicionalIdAdicional: adicional.idAdicional
-      });
-  
-      // 10. Transação de Pagamento
-      await TransacaoDePagamento.create({
-        metodoPagamento: 'Cartão de Crédito',
-        numeroCartao: '1234567812345678',
-        validadeCartao: '12/28',
-        codigoCVC: '123',
-        valor: pedido.preco,
-        pedidoIdPedido: pedido.idPedido
-      });
-  
-      console.log('✅ Banco populado com sucesso!');
-      await sequelize.close();
-    } catch (error) {
-      console.error('❌ Erro ao popular banco:', error);
-    }
+        descricao: 'Borda de queijo catupiry',
+        preco: 6.0
+      },
+      {
+        nome: 'Extra Bacon',
+        descricao: 'Adicional de bacon crocante',
+        preco: 4.0
+      },
+      {
+        nome: 'Molho Especial',
+        descricao: 'Molho de alho artesanal',
+        preco: 3.0
+      },
+      {
+        nome: 'Azeitonas Pretas',
+        descricao: 'Azeitonas selecionadas',
+        preco: 2.5
+      }
+    ]);    
+
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Erro ao popular banco:', error);
+    process.exit(1);
   }
-  
-  seed();
+}
+
+seed();

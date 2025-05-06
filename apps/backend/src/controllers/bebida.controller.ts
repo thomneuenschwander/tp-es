@@ -12,9 +12,20 @@ export const BebidaController = {
   },
 
   async findAll(req: Request, res: Response) {
-    const results = await Bebida.findAll();
-    res.json(results);
-  },
+    const bebidas = await Bebida.findAll();
+  
+    const bebidasComImagem = bebidas.map((bebida) => {
+      // cria um nome de imagem com base no nome (ex: Coca-Cola -> coca.png)
+      const nomeArquivo = bebida.nome.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/g, '') + '.png'
+  
+      return {
+        ...bebida.toJSON(),
+        image: `/images/${nomeArquivo}`
+      }
+    });
+  
+    res.json(bebidasComImagem);
+  },  
 
   async findById(req: Request, res: Response) {
     const { id } = req.params;

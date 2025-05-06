@@ -16,6 +16,7 @@ export class Pizza extends Model<
   declare tamanho: string;
   declare preco: number;
   declare descricao: string;
+  declare slug: string
 }
 
 Pizza.init({
@@ -26,6 +27,10 @@ Pizza.init({
   },
   nome: {
     type: DataTypes.STRING(45)
+  },
+  slug: {
+    type: DataTypes.STRING(45),
+    allowNull: false
   },
   tamanho: {
     type: DataTypes.CHAR(2)

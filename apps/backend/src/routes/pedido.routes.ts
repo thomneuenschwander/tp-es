@@ -11,6 +11,7 @@ router.put('/:id', PedidoController.update as RequestHandler);
 router.delete('/:id', PedidoController.delete as RequestHandler);
 
 // Rota para criar um pedido completo
-router.post('/completo', authMiddleware, PedidoController.createCompleteOrder as RequestHandler);
+router.post('/completo', PedidoController.createCompleteOrder as RequestHandler);
+
 
 export default router;

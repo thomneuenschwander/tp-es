@@ -72,7 +72,7 @@ export const PedidoController = {
         preco,
         status,
         endereco,
-        cpfCliente: req.cpf,
+        cpfCliente: req.body.cpfCliente,
         idRestaurante
       }, { transaction });
 
@@ -140,5 +140,6 @@ export const PedidoController = {
       await transaction.rollback();
       res.status(400).json({ error: 'Erro ao criar pedido', details: error });
     }
-  }
+  },
+  
 };
