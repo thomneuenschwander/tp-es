@@ -12,29 +12,9 @@ import {
 import { useState } from 'react'
 import { NewDrinkItem, useCart } from '../contexts/CartContext'
 import CartSnackbar from '../components/CartSnackbar'
-// ICONS
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { useNavigate } from 'react-router-dom'
-const drinksData = [
-  {
-    name: 'Coca-Cola',
-    description: 'Refrigerante 350ml',
-    price: 5.0,
-    image: '/images/coca.png',
-  },
-  {
-    name: 'Suco de Laranja',
-    description: 'Suco natural gelado',
-    price: 7.0,
-    image: '/images/orange_juice.png',
-  },
-  {
-    name: 'Água Mineral',
-    description: 'Sem gás, 500ml',
-    price: 3.5,
-    image: '/images/water.png',
-  },
-]
+import { useDrinks } from '../hooks/useDrinks'
 
 const Drinks = () => {
   const { addItem, removeItem } = useCart()
@@ -43,26 +23,26 @@ const Drinks = () => {
   const [addedDrink, setAddedDrink] = useState<string | null>(null)
   const [lastAddedId, setLastAddedId] = useState<string | null>(null)
 
-  const handleAddDrink = (drink: (typeof drinksData)[0]) => {
+  const { data: drinks = [], isLoading } = useDrinks()
+
+  const handleAddDrink = (drink: any) => {
     const drinkItem: NewDrinkItem = {
       type: 'drink',
-      name: drink.name,
-      description: drink.description,
-      price: drink.price,
+      name: drink.nome,
+      description: drink.descricao,
+      price: drink.preco,
       image: drink.image,
       quantity: 1,
+      idBack: undefined,
     }
-  
+
     const id = addItem(drinkItem)
     setLastAddedId(id)
-    setAddedDrink(drink.name)
-  
+    setAddedDrink(drink.nome)
+
     setSnackbarOpen(false)
-    setTimeout(() => {
-      setSnackbarOpen(true)
-    }, 100)
+    setTimeout(() => setSnackbarOpen(true), 100)
   }
-  
 
   return (
     <Container maxWidth="sm" sx={{ py: { xs: 4, sm: 8 } }}>
@@ -71,17 +51,17 @@ const Drinks = () => {
       </Typography>
 
       <Stack spacing={4}>
-        {drinksData.map((drink) => (
-          <Card key={drink.name} sx={{ display: 'flex' }}>
-            <CardMedia component="img" sx={{ width: 140 }} image={drink.image} alt={drink.name} />
+        {drinks.map((drink: any) => (
+          <Card key={drink.idBebida} sx={{ display: 'flex' }}>
+            <CardMedia component="img" sx={{ width: 140 }} image={drink.image} alt={drink.nome} />
             <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
               <CardContent>
-                <Typography variant="h6">{drink.name}</Typography>
+                <Typography variant="h6">{drink.nome}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {drink.description}
+                  {drink.descricao}
                 </Typography>
                 <Typography variant="subtitle2" mt={1}>
-                  R$ {drink.price.toFixed(2)}
+                  R$ {drink.preco.toFixed(2)}
                 </Typography>
               </CardContent>
               <CardActions sx={{ px: 2, pb: 2 }}>
@@ -93,6 +73,7 @@ const Drinks = () => {
           </Card>
         ))}
       </Stack>
+
       <Stack mt={4}>
         <Button variant="outlined" size="large" onClick={() => navigate('/cart')}>
           <ShoppingCartIcon />
@@ -101,6 +82,7 @@ const Drinks = () => {
           Escolher Pizzas
         </Button>
       </Stack>
+
       <CartSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}

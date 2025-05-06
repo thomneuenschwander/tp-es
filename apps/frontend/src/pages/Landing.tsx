@@ -2,6 +2,7 @@ import { alpha, Box, Container, Typography, useTheme } from '@mui/material';
 import { Outlet, useNavigate } from 'react-router-dom';
 import SignupForm from '../components/forms/SignupForm';
 import SigninForm from '../components/forms/SigninForm';
+import { useSignup } from '../hooks/useSingup';
 
 export const Landing = () => {
   const theme = useTheme()
@@ -39,11 +40,31 @@ export const Landing = () => {
 
 export const SignupWrapper = () => {
   const navigate = useNavigate();
+  const signup = useSignup();
+
+  const handleSignup = async (data: {
+    cpf: string;
+    nome: string;
+    email: string;
+    senha: string;
+    telefone: string;
+  }) => {
+    signup.mutate(data, {
+      onSuccess: () => {
+        alert('Cadastro realizado com sucesso!');
+        navigate('/login');
+      },
+      onError: (error: any) => {
+        alert('Erro ao cadastrar: ' + error.response?.data?.error || 'erro desconhecido');
+      },
+    });
+  };
+
   return (
     <SignupForm
-      buttonLabel="Sign Up"
-      linkLabel="Log In"
-      onSubmit={(data) => console.log('signup', data)}
+      buttonLabel="Cadastrar"
+      linkLabel="Entrar"
+      onSubmit={handleSignup}
       onLinkClick={() => navigate('/login')}
     />
   );

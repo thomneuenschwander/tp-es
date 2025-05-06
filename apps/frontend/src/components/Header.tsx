@@ -24,7 +24,7 @@ const Header = () => {
             textDecoration: 'none',
           }}
         >
-          PizzaApp
+          PizzaPlanet
         </Typography>
         {/* DESKTOP */}
         <Box

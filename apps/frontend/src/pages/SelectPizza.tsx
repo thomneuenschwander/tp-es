@@ -15,60 +15,32 @@ import {
 import { useMemo, useState } from 'react'
 import PizzaTypeCard from '../components/PizzaTypeCard'
 import { NewPizzaItem, useCart } from '../contexts/CartContext'
-
-// ICONS
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { useNavigate } from 'react-router-dom'
 import CartSnackbar from '../components/CartSnackbar'
+import { usePizzas } from '../hooks/usePizzas'
 
-const pizzaData = {
-  sizes: [
-    { value: 'small', label: 'Pequena', price: 20 },
-    { value: 'medium', label: 'Média', price: 30 },
-    { value: 'large', label: 'Grande', price: 40 },
-    { value: 'brutal', label: 'Brutal', price: 50 },
-  ],
-  flavors: [
-    {
-      value: 'margherita',
-      label: 'Margherita',
-      description: 'Molho de tomate, muçarela e manjericão.',
-      image: '/images/margherita.png',
-      price: 0,
-    },
-    {
-      value: 'pepperoni',
-      label: 'Pepperoni',
-      description: 'Pepperoni crocante sobre queijo derretido.',
-      image: '/images/pepperoni.png',
-      price: 6,
-    },
-    {
-      value: 'vegetarian',
-      label: 'Vegetarian',
-      description: 'Mix de legumes frescos com muçarela.',
-      image: '/images/vegetarian.png',
-      price: 4,
-    },
-  ],
-  extras: [
-    { value: 'cheese', label: 'Queijo Extra', price: 5 },
-    { value: 'glutenFree', label: 'Borda Gluten-Free', price: 4 },
-  ],
-} as const
+const sizes = [
+  { value: 'small', label: 'Pequena', price: 20 },
+  { value: 'medium', label: 'Média', price: 30 },
+  { value: 'large', label: 'Grande', price: 40 },
+  { value: 'brutal', label: 'Brutal', price: 50 },
+] as const
+
+const extras = [
+  { value: 'cheese', label: 'Queijo Extra', price: 5 },
+  { value: 'glutenFree', label: 'Borda Gluten-Free', price: 4 },
+] as const
 
 type PizzaSize = 'small' | 'medium' | 'large' | 'brutal'
-type PizzaType = 'margherita' | 'pepperoni' | 'vegetarian'
 
 const SelectPizza = () => {
   const [lastAddedId, setLastAddedId] = useState<string | null>(null)
-
   const { addItem, removeItem } = useCart()
-
   const [size, setSize] = useState<PizzaSize | string>('small')
-  const [type, setType] = useState<PizzaType>('margherita')
-
+  const [type, setType] = useState<string>('')
   const [customizations, setCustomizations] = useState<string[]>([])
+  const { data: pizzas = [] } = usePizzas()
 
   const toggleOption = (value: string) => {
     setCustomizations((prev) =>
@@ -76,8 +48,8 @@ const SelectPizza = () => {
     )
   }
 
-  const selectedSize = pizzaData.sizes.find((s) => s.value === size)
-  const selectedFlavor = pizzaData.flavors.find((f) => f.value === type)
+  const selectedSize = sizes.find((s) => s.value === size)
+  const selectedFlavor = pizzas.find((f: any) => f.slug === type)
 
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [lastPizza, setLastPizza] = useState<{
@@ -88,29 +60,30 @@ const SelectPizza = () => {
 
   const totalPrice = useMemo(() => {
     const base = selectedSize?.price || 0
-    const flavor = selectedFlavor?.price || 0
-    const extras = customizations.reduce((sum, extraKey) => {
-      const extra = pizzaData.extras.find((e) => e.value === extraKey)
+    const flavor = selectedFlavor?.preco || 0
+    const extrasTotal = customizations.reduce((sum, extraKey) => {
+      const extra = extras.find((e) => e.value === extraKey)
       return sum + (extra?.price || 0)
     }, 0)
-    return base + flavor + extras
-  }, [size, type, customizations])
+    return base + flavor + extrasTotal
+  }, [size, type, customizations, selectedFlavor])
 
   const navigate = useNavigate()
+
+  const getImage = (slug: string) => `/images/${slug}.png`
 
   return (
     <Container maxWidth="md" sx={{ py: { xs: 2, sm: 10 } }}>
       <Typography variant="h5" fontWeight="bold" sx={{ mb: { xs: 2, sm: 5 } }}>
         Escolha seus sabores de Pizza
       </Typography>
-
       <Grid container spacing={4}>
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <Grid size={{xs:12, sm:6}}>
           <Stack spacing={{ xs: 2, sm: 4 }}>
             <FormControl>
               <FormLabel>Selecione o Tamanho da sua pizza</FormLabel>
               <RadioGroup value={size} onChange={(e) => setSize(e.target.value)}>
-                {pizzaData.sizes.map(({ value, label, price }) => (
+                {sizes.map(({ value, label, price }) => (
                   <FormControlLabel
                     key={value}
                     value={value}
@@ -135,7 +108,7 @@ const SelectPizza = () => {
                 Customize sua Pizza
               </Typography>
               <Stack spacing={2}>
-                {pizzaData.extras.map(({ value, label, price }) => (
+                {extras.map(({ value, label, price }) => (
                   <Box
                     key={value}
                     display="flex"
@@ -161,19 +134,19 @@ const SelectPizza = () => {
           </Stack>
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <Grid size={{xs:12, sm:6}}>
           <Typography fontWeight={500} gutterBottom color="text.secondary">
             Escolha seu sabor de Pizza
           </Typography>
           <Stack spacing={2}>
-            {pizzaData.flavors.map(({ value, label, description, image, price }) => (
-              <Box key={value} onClick={() => setType(value)}>
+            {pizzas.map((pizza: any) => (
+              <Box key={pizza.slug} onClick={() => setType(pizza.slug)}>
                 <PizzaTypeCard
-                  flavor={label}
-                  description={description}
-                  imageUrl={image}
-                  selected={type === value}
-                  price={price}
+                  flavor={pizza.nome}
+                  description={pizza.descricao}
+                  imageUrl={getImage(pizza.slug)}
+                  selected={type === pizza.slug}
+                  price={pizza.preco}
                 />
               </Box>
             ))}
@@ -204,12 +177,13 @@ const SelectPizza = () => {
 
             const pizzaItem: NewPizzaItem = {
               type: 'pizza',
-              flavor: selectedFlavor.label,
+              flavor: selectedFlavor.nome,
               size: selectedSize.label,
               extras: customizations,
               price: totalPrice,
-              image: selectedFlavor.image,
+              image: getImage(selectedFlavor.slug),
               quantity: 1,
+              idBack: undefined
             }
 
             const id = addItem(pizzaItem)
@@ -225,7 +199,7 @@ const SelectPizza = () => {
       <CartSnackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}
-        itemName={selectedFlavor?.label || 'Pizza'}
+        itemName={selectedFlavor?.nome || 'Pizza'}
         onUndo={
           lastAddedId
             ? () => {

@@ -10,6 +10,7 @@ export interface BaseCartItem {
 }
 
 export interface PizzaItem extends BaseCartItem {
+  idBack: any
   type: 'pizza'
   flavor: string
   size: string
@@ -17,6 +18,7 @@ export interface PizzaItem extends BaseCartItem {
 }
 
 export interface DrinkItem extends BaseCartItem {
+  idBack: any
   type: 'drink'
   name: string
   description: string
