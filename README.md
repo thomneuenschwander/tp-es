@@ -44,19 +44,12 @@ npm install
 Crie um arquivo `.env` na pasta `apps/backend` com as seguintes variáveis:
 
 ```env
-# Configurações do Servidor
-PORT=3001
-NODE_ENV=development
-
-# Configurações do Banco de Dados (se necessário)
+DB_NAME=pizzaPlanet
+DB_USER=postgres
+DB_PASSWORD=####
 DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=seu_banco
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-
-# Outras configurações
-JWT_SECRET=seu_jwt_secret
+STRIPE_SECRET_KEY=teste
+PORT=3000
 ```
 
 ## Executando o Projeto
