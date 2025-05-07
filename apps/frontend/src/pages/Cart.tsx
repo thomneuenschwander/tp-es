@@ -7,6 +7,7 @@ import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout'
 import { useCart } from '../contexts/CartContext'
 import BackButton from '../components/BackButton'
 import { loadStripe } from '@stripe/stripe-js'
+import { useAuth } from '../contexts/AuthContext'
 
 // Inicializa o Stripe com sua chave pública
 const stripePromise = loadStripe(
@@ -29,6 +30,8 @@ interface CartItem {
 const Cart = () => {
   const { items, removeItem, addItem } = useCart()
   const [loading, setLoading] = useState(false)
+  const { cpf } = useAuth()
+
 
   const updateQuantity = (id: string, delta: number) => {
     const item = items.find((i: CartItem) => i.id === id)
@@ -54,7 +57,7 @@ const Cart = () => {
     setLoading(true)
 
     try {
-      const cpfCliente = '11122233344' // ou pegue do usuário autenticado futuramente
+      const cpfCliente = cpf
 
       const itens = items
         .filter((i) => i.type === 'pizza')

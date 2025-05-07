@@ -31,6 +31,44 @@ const App = () => {
       createTheme({
         palette: {
           mode,
+          primary: {
+            main: '#e65100',   // Laranja queimado (molho de tomate assado)
+            contrastText: '#fff',
+          },
+          secondary: {
+            main: '#ffeb3b',   // Amarelo queijo
+            contrastText: '#000',
+          },
+          background: {
+            default: mode === 'light' ? '#fff8f1' : '#1e1e1e',  // Massa clara ou fundo escuro
+            paper: mode === 'light' ? '#fff3e0' : '#2c2c2c',
+          },
+          error: {
+            main: '#d32f2f', // Vermelho tomate forte
+          },
+          warning: {
+            main: '#ffa726',
+          },
+          success: {
+            main: '#81c784',
+          },
+          info: {
+            main: '#64b5f6',
+          },
+        },
+        typography: {
+          fontFamily: `'Raleway', 'Roboto', sans-serif`,
+        },
+        components: {
+          MuiButton: {
+            styleOverrides: {
+              root: {
+                borderRadius: 8,
+                textTransform: 'none',
+                fontWeight: 600,
+              },
+            },
+          },
         },
       }),
     [mode],
