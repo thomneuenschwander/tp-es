@@ -1,58 +1,59 @@
+// src/pages/Account.tsx ------------------------------------------------------
 import {
   Avatar,
   Box,
   Button,
   Container,
   Divider,
-  IconButton,
   Paper,
   Stack,
   Switch,
   TextField,
   Typography,
-  useTheme,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+} from '@mui/material'
+import {
+  Brightness4 as DarkIcon,
+  Brightness7 as LightIcon,
+  Edit as EditIcon,
+  Save as SaveIcon,
+  LocationOn as LocationIcon,
+  CreditCard as CardIcon,
+} from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
-// Icons
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { useAuth } from '../contexts/AuthContext'
+import { useCliente } from '../hooks/useCliente'
 
-type AccountProps = {
-  toggleTheme: () => void;
-  themeMode: 'light' | 'dark';
-};
+type AccountProps = { toggleTheme: () => void; themeMode: 'light' | 'dark' }
 
 const Account = ({ toggleTheme, themeMode }: AccountProps) => {
-  const navigate = useNavigate();
+  const { cpf, logout } = useAuth() // ← auth context
+  const navigate = useNavigate()
+  const { data, isLoading, update } = useCliente(cpf)
 
-  const initialUser = {
-    name: 'João Pizza',
-    email: 'joao.pizza@example.com',
-    phone: '31 998161699',
-    address: 'Rua Margherita, 123 - São Paulo, SP',
-  };
+  /* estados controlados */
+  const [isEditing, setIsEditing] = useState(false)
+  const [form, setForm] = useState({ nome: '', email: '', telefone: '' })
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(initialUser.name);
-  const [email, setEmail] = useState(initialUser.email);
-  const [phone, setPhone] = useState(initialUser.phone);
+  /* quando chegar o usuário → preencher formulário */
+  useEffect(() => {
+    if (data) setForm({ nome: data.nome, email: data.email, telefone: data.telefone })
+  }, [data])
 
-  const handleToggleEdit = () => {
-    if (isEditing) {
-      console.log('Saving...', { name, email, phone });
-    }
-    setIsEditing(!isEditing);
-  };
+  const handleSave = () => {
+    update.mutate(form, {
+      onSuccess: () => setIsEditing(false),
+      onError: () => alert('Erro ao salvar'),
+    })
+  }
+
+  if (isLoading) return <Container sx={{ py: 4 }}>Carregando…</Container>
 
   return (
-    <Container maxWidth="sm">
-      <Stack spacing={2} pt={{xs: 2, sm: 5}} pb={2}>
+    <Container maxWidth="sm" sx={{ py: { xs: 2, sm: 5 } }}>
+      {/* ——— Preferências de tema ——— */}
+      <Stack spacing={2} pb={2}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Box>
             <Typography variant="subtitle1">
@@ -64,105 +65,100 @@ const Account = ({ toggleTheme, themeMode }: AccountProps) => {
           </Box>
 
           <Stack direction="row" alignItems="center" spacing={1}>
-            <Brightness7Icon />
+            <LightIcon />
             <Switch
               checked={themeMode === 'dark'}
               onChange={toggleTheme}
               inputProps={{ 'aria-label': 'toggle theme' }}
             />
-            <Brightness4Icon />
+            <DarkIcon />
           </Stack>
         </Stack>
       </Stack>
+
       <Divider />
-      <Stack spacing={2} py={2}>
-        <Stack spacing={2} alignItems="center" width="100%">
-          <Avatar sx={{ width: 80, height: 80 }}>{name[0]}</Avatar>
-          <TextField
-            label="Nome"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            fullWidth
-            InputProps={{ readOnly: !isEditing }}
-          />
-          <TextField
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            fullWidth
-            InputProps={{ readOnly: !isEditing }}
-          />
-          <TextField
-            label="Telefone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            fullWidth
-            InputProps={{ readOnly: !isEditing }}
-          />
 
-          <Button
-            variant={isEditing ? 'contained' : 'outlined'}
-            startIcon={isEditing ? <SaveIcon /> : <EditIcon />}
-            sx={{ alignSelf: 'stretch' }}
-            onClick={handleToggleEdit}
-          >
-            {isEditing ? 'Salvar alterações' : 'Editar informações'}
-          </Button>
-        </Stack>
+      {/* ——— Dados do cliente ——— */}
+      <Stack spacing={2} py={2} alignItems="center">
+        <Avatar sx={{ width: 80, height: 80 }}>{form.nome[0]}</Avatar>
 
-        {/* Endereço atual */}
-        <Paper
-          variant="outlined"
-          sx={{
-            p: 2,
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 2,
-            backgroundColor: 'background.paper',
-          }}
+        <TextField
+          label="Nome"
+          value={form.nome}
+          onChange={(e) => setForm({ ...form, nome: e.target.value })}
+          fullWidth
+          InputProps={{ readOnly: !isEditing }}
+        />
+        <TextField
+          label="Email"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          fullWidth
+          InputProps={{ readOnly: !isEditing }}
+        />
+        <TextField
+          label="Telefone"
+          value={form.telefone}
+          onChange={(e) => setForm({ ...form, telefone: e.target.value })}
+          fullWidth
+          InputProps={{ readOnly: !isEditing }}
+        />
+
+        <Button
+          variant={isEditing ? 'contained' : 'outlined'}
+          startIcon={isEditing ? <SaveIcon /> : <EditIcon />}
+          sx={{ alignSelf: 'stretch' }}
+          onClick={isEditing ? handleSave : () => setIsEditing(true)}
+          disabled={update.isPending}
         >
-          <LocationOnIcon color="primary" sx={{ mt: 0.5 }} />
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="subtitle1">Endereço atual</Typography>
-            <Typography variant="body2" color="text.secondary">
-              {initialUser.address}
-            </Typography>
-          </Box>
-          <Button size="small" onClick={() => navigate('/address')} sx={{ mt: 0.5 }}>
-            Alterar
-          </Button>
-        </Paper>
-
-        {/* Forma de pagamento */}
-        <Paper
-          variant="outlined"
-          sx={{
-            p: 2,
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 2,
-            backgroundColor: 'background.paper',
-          }}
-        >
-          <CreditCardIcon color="action" sx={{ mt: 0.5 }} />
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="subtitle1">Forma de pagamento</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Nenhuma forma cadastrada
-            </Typography>
-          </Box>
-          <Button size="small" onClick={() => navigate('/payment-method')} sx={{ mt: 0.5 }}>
-            Alterar
-          </Button>
-        </Paper>
-
-        <Divider />
-        <Button variant="contained" color="error" fullWidth>
-          Sair da conta
+          {isEditing ? 'Salvar alterações' : 'Editar informações'}
         </Button>
       </Stack>
-    </Container>
-  );
-};
 
-export default Account;
+      {/* ——— Endereço (placeholder para detalhe/futuro) ——— */}
+      <Paper variant="outlined" sx={{ p: 2, display: 'flex', gap: 2, mb: 2 }}>
+        <LocationIcon color="primary" sx={{ mt: 0.5 }} />
+        <Box flexGrow={1}>
+          <Typography variant="subtitle1">Endereço atual</Typography>
+          <Typography variant="body2" color="text.secondary">
+            {data?.endereco || 'Nenhum endereço cadastrado'}
+          </Typography>
+        </Box>
+        <Button size="small" onClick={() => navigate('/address')}>
+          Alterar
+        </Button>
+      </Paper>
+
+      {/* ——— Forma de pagamento (placeholder) ——— */}
+      <Paper variant="outlined" sx={{ p: 2, display: 'flex', gap: 2 }}>
+        <CardIcon color="action" sx={{ mt: 0.5 }} />
+        <Box flexGrow={1}>
+          <Typography variant="subtitle1">Forma de pagamento</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Nenhuma forma cadastrada
+          </Typography>
+        </Box>
+        <Button size="small" onClick={() => navigate('/payment-method')}>
+          Alterar
+        </Button>
+      </Paper>
+
+      <Divider sx={{ my: 2 }} />
+
+      {/* ——— Logout ——— */}
+      <Button
+        variant="contained"
+        color="error"
+        fullWidth
+        onClick={() => {
+          logout()
+          navigate('/')
+        }}
+      >
+        Sair da conta
+      </Button>
+    </Container>
+  )
+}
+
+export default Account

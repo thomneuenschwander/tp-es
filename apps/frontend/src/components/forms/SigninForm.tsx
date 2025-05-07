@@ -2,18 +2,17 @@ import { Button, Link, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 
 type SigninFormProps = {
-  onSubmit: (data: { email: string; password: string }) => void
-  linkLabel: string
+  onSubmit: (data: { email: string; senha: string }) => void
   onLinkClick: () => void
 }
 
-const SigninForm = ({ onSubmit, linkLabel, onLinkClick }: SigninFormProps) => {
+const SigninForm = ({ onSubmit, onLinkClick }: SigninFormProps) => {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [senha, setSenha] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit({ email, password })
+    onSubmit({ email, senha })
   }
 
   return (
@@ -26,19 +25,19 @@ const SigninForm = ({ onSubmit, linkLabel, onLinkClick }: SigninFormProps) => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
-          label="Password"
+          label="Senha"
           type="password"
           fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
         />
         <Button type="submit" variant="contained" fullWidth>
-          Sign In
+          Entrar
         </Button>
         <Typography textAlign="center" variant="body2">
-          Don’t have an account?{' '}
-          <Link component="button" onClick={onLinkClick}>
-            {linkLabel}
+          Ainda não tem uma conta?{' '}
+          <Link component="button" type="button" onClick={onLinkClick}>
+            Cadastre-se
           </Link>
         </Typography>
       </Stack>
