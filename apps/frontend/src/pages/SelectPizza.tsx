@@ -183,8 +183,8 @@ const SelectPizza = () => {
               price: totalPrice,
               image: getImage(selectedFlavor.slug),
               quantity: 1,
-              idBack: undefined
-            }
+              idBack: selectedFlavor.idPizza 
+            }            
 
             const id = addItem(pizzaItem)
             setLastAddedId(id)
