@@ -141,5 +141,34 @@ export const PedidoController = {
       res.status(400).json({ error: 'Erro ao criar pedido', details: error });
     }
   },
+
+  async findByClienteCpf(req: Request, res: Response): Promise<void> {
+    try {
+      const { cpf } = req.params;
+      const pedidos = await Pedido.findAll({
+        where: { cpfCliente: cpf },
+        include: [
+          {
+            model: ItemDePedido,
+            include: ['Pizza'] // deve estar associado corretamente com Pizza
+          },
+          {
+            model: BebidaDoPedido,
+            include: ['Bebida']
+          }
+        ]
+      });
+  
+      if (!pedidos || pedidos.length === 0) {
+        res.status(404).json({ error: 'Nenhum pedido encontrado para esse cliente' });
+        return;
+      }
+  
+      res.json(pedidos);
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ error: 'Erro ao buscar pedidos', details: error });
+    }
+  }
   
 };

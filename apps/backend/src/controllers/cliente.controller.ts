@@ -15,23 +15,12 @@ export const ClienteController = {
       const cliente = await Cliente.create({
         ...rest,
         email,
-        senha // ← senha salva em texto puro
+        senha
       });
 
-      const token = jwt.sign(
-        { cpf: cliente.cpf },
-        process.env.JWT_SECRET!,
-        { expiresIn: '1d' }
-      );
-
       return res.status(201).json({
-        cliente: {
-          cpf: cliente.cpf,
-          nome: cliente.nome,
-          email: cliente.email,
-          telefone: cliente.telefone
-        },
-        token
+        logado: true,
+        cpf: cliente.cpf
       });
     } catch (error) {
       return res.status(400).json({ error: 'Erro ao criar cliente', details: error });

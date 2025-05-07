@@ -28,7 +28,7 @@ interface CartItem {
 
 
 const Cart = () => {
-  const { items, removeItem, addItem } = useCart()
+  const { items, removeItem, addItem,clearCart } = useCart()
   const [loading, setLoading] = useState(false)
   const { cpf } = useAuth()
 
@@ -106,6 +106,7 @@ const Cart = () => {
       const pedidoCriado = await response.json()
       console.log('✅ Pedido criado:', pedidoCriado)
       alert('Pedido realizado com sucesso!')
+      clearCart()
     } catch (error: any) {
       console.error('❌ Erro ao criar pedido:', error)
       alert(`Erro ao criar pedido: ${error.message}`)

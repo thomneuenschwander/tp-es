@@ -13,5 +13,7 @@ router.delete('/:id', PedidoController.delete as RequestHandler);
 // Rota para criar um pedido completo
 router.post('/completo', PedidoController.createCompleteOrder as RequestHandler);
 
+// GET /pedidos/cliente/:cpf
+router.get('/cliente/:cpf', PedidoController.findByClienteCpf as RequestHandler);
 
 export default router;
