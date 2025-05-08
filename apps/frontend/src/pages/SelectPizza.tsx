@@ -11,66 +11,77 @@ import {
   Stack,
   Container,
   Grid,
-} from '@mui/material'
-import { useMemo, useState } from 'react'
-import PizzaTypeCard from '../components/PizzaTypeCard'
-import { NewPizzaItem, useCart } from '../contexts/CartContext'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import { useNavigate } from 'react-router-dom'
-import CartSnackbar from '../components/CartSnackbar'
-import { usePizzas } from '../hooks/usePizzas'
+} from '@mui/material';
+import { useMemo, useState } from 'react';
+import PizzaTypeCard from '../components/PizzaTypeCard';
+import { NewPizzaItem, useCart } from '../contexts/CartContext';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useNavigate } from 'react-router-dom';
+import CartSnackbar from '../components/CartSnackbar';
+import { usePizzas } from '../hooks/usePizzas';
+import { useAdicionais } from '../hooks/useAdicionais';
 
 const sizes = [
   { value: 'small', label: 'Pequena', price: 20 },
   { value: 'medium', label: 'Média', price: 30 },
   { value: 'large', label: 'Grande', price: 40 },
   { value: 'brutal', label: 'Brutal', price: 50 },
-] as const
+] as const;
 
-const extras = [
-  { value: 'cheese', label: 'Queijo Extra', price: 5 },
-  { value: 'glutenFree', label: 'Borda Gluten-Free', price: 4 },
-] as const
+type PizzaSize = 'small' | 'medium' | 'large' | 'brutal';
 
-type PizzaSize = 'small' | 'medium' | 'large' | 'brutal'
+interface Adicional {
+  idAdicional: string;
+  nome: string;
+  preco: number;
+}
+
+interface Pizza {
+  idPizza: string;
+  slug: string;
+  nome: string;
+  descricao: string;
+  preco: number;
+}
 
 const SelectPizza = () => {
-  const [lastAddedId, setLastAddedId] = useState<string | null>(null)
-  const { addItem, removeItem } = useCart()
-  const [size, setSize] = useState<PizzaSize | string>('small')
-  const [type, setType] = useState<string>('')
-  const [customizations, setCustomizations] = useState<string[]>([])
-  const { data: pizzas = [] } = usePizzas()
+  const [lastAddedId, setLastAddedId] = useState<string | null>(null);
+  const { addItem, removeItem } = useCart();
+  const [size, setSize] = useState<PizzaSize | string>('small');
+  const [type, setType] = useState<string>('');
+  const [customizations, setCustomizations] = useState<string[]>([]);
+  const { data: pizzas = [] } = usePizzas();
+  const { data: adicionais = [] } = useAdicionais();
 
   const toggleOption = (value: string) => {
     setCustomizations((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
-    )
-  }
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  };
 
-  const selectedSize = sizes.find((s) => s.value === size)
-  const selectedFlavor = pizzas.find((f: any) => f.slug === type)
+  const selectedSize = sizes.find((s) => s.value === size);
+  const selectedFlavor = pizzas.find((f: Pizza) => f.slug === type);
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [lastPizza, setLastPizza] = useState<{
-    size: string
-    type: string
-    extras: string[]
-  } | null>(null)
+    size: string;
+    type: string;
+    extras: string[];
+  } | null>(null);
 
   const totalPrice = useMemo(() => {
-    const base = selectedSize?.price || 0
-    const flavor = selectedFlavor?.preco || 0
+    const base = selectedSize?.price || 0;
+    const flavor = selectedFlavor?.preco || 0;
     const extrasTotal = customizations.reduce((sum, extraKey) => {
-      const extra = extras.find((e) => e.value === extraKey)
-      return sum + (extra?.price || 0)
-    }, 0)
-    return base + flavor + extrasTotal
-  }, [size, type, customizations, selectedFlavor])
+      const extra = adicionais.find((e: Adicional) => e.idAdicional === extraKey);
+      return sum + (extra?.preco || 0);
+    }, 0);
+    return base + flavor + extrasTotal;
+  }, [size, type, customizations, selectedFlavor, adicionais]);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const getImage = (slug: string) => `/images/${slug}.png`
+  const getImage = (slug: string) => `/images/${slug}.png`;
 
   return (
     <Container maxWidth="md" sx={{ py: { xs: 2, sm: 10 } }}>
@@ -78,11 +89,16 @@ const SelectPizza = () => {
         Escolha seus sabores de Pizza
       </Typography>
       <Grid container spacing={4}>
-        <Grid size={{xs:12, sm:6}}>
+        <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column' }}>
           <Stack spacing={{ xs: 2, sm: 4 }}>
             <FormControl>
               <FormLabel>Selecione o Tamanho da sua pizza</FormLabel>
-              <RadioGroup value={size} onChange={(e) => setSize(e.target.value)}>
+              <RadioGroup
+                value={size}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSize(e.target.value)
+                }
+              >
                 {sizes.map(({ value, label, price }) => (
                   <FormControlLabel
                     key={value}
@@ -108,24 +124,24 @@ const SelectPizza = () => {
                 Customize sua Pizza
               </Typography>
               <Stack spacing={2}>
-                {extras.map(({ value, label, price }) => (
+                {adicionais.map(({ idAdicional, nome, preco }: Adicional) => (
                   <Box
-                    key={value}
+                    key={idAdicional}
                     display="flex"
                     alignItems="center"
                     justifyContent="space-between"
                   >
                     <Box display="flex" alignItems="center" gap={1}>
-                      <Typography>{label}</Typography>
-                      {customizations.includes(value) && (
+                      <Typography>{nome}</Typography>
+                      {customizations.includes(idAdicional) && (
                         <Typography variant="caption" color="text.secondary">
-                          (+R$ {price.toFixed(2)})
+                          (+R$ {preco.toFixed(2)})
                         </Typography>
                       )}
                     </Box>
                     <Checkbox
-                      checked={customizations.includes(value)}
-                      onChange={() => toggleOption(value)}
+                      checked={customizations.includes(idAdicional)}
+                      onChange={() => toggleOption(idAdicional)}
                     />
                   </Box>
                 ))}
@@ -134,23 +150,30 @@ const SelectPizza = () => {
           </Stack>
         </Grid>
 
-        <Grid size={{xs:12, sm:6}}>
-          <Typography fontWeight={500} gutterBottom color="text.secondary">
-            Escolha seu sabor de Pizza
-          </Typography>
-          <Stack spacing={2}>
-            {pizzas.map((pizza: any) => (
-              <Box key={pizza.slug} onClick={() => setType(pizza.slug)}>
-                <PizzaTypeCard
-                  flavor={pizza.nome}
-                  description={pizza.descricao}
-                  imageUrl={getImage(pizza.slug)}
-                  selected={type === pizza.slug}
-                  price={pizza.preco}
-                />
-              </Box>
-            ))}
-          </Stack>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
+        >
+          <Box sx={{ width: '100%', maxWidth: { xs: '100%', sm: 'calc(100% - 32px)' } }}>
+            <Typography fontWeight={500} gutterBottom color="text.secondary">
+              Escolha seu sabor de Pizza
+            </Typography>
+            <Stack spacing={2}>
+              {pizzas.map((pizza: Pizza) => (
+                <Box key={pizza.slug} onClick={() => setType(pizza.slug)}>
+                  <PizzaTypeCard
+                    flavor={pizza.nome}
+                    description={pizza.descricao}
+                    imageUrl={getImage(pizza.slug)}
+                    selected={type === pizza.slug}
+                    price={pizza.preco}
+                  />
+                </Box>
+              ))}
+            </Stack>
+          </Box>
         </Grid>
       </Grid>
 
@@ -173,24 +196,29 @@ const SelectPizza = () => {
           size="large"
           fullWidth
           onClick={() => {
-            if (!selectedSize || !selectedFlavor) return
+            if (!selectedSize || !selectedFlavor) return;
+
+            const extras = customizations.map((id) => {
+              const extra = adicionais.find((e: Adicional) => e.idAdicional === id);
+              return extra ? { idAdicional: extra.idAdicional, nome: extra.nome } : null;
+            }).filter((e): e is { idAdicional: string; nome: string } => e !== null);
 
             const pizzaItem: NewPizzaItem = {
               type: 'pizza',
               flavor: selectedFlavor.nome,
               size: selectedSize.label,
-              extras: customizations,
-              price: totalPrice,
+              extras,
+              price: totalPrice, // Inclui preço da pizza + adicionais
               image: getImage(selectedFlavor.slug),
               quantity: 1,
-              idBack: selectedFlavor.idPizza 
-            }            
+              idBack: selectedFlavor.idPizza,
+            };
 
-            const id = addItem(pizzaItem)
-            setLastAddedId(id)
-            setLastPizza({ size, type, extras: customizations })
-            setSnackbarOpen(false)
-            setTimeout(() => setSnackbarOpen(true), 100)
+            const id = addItem(pizzaItem);
+            setLastAddedId(id);
+            setLastPizza({ size, type, extras: customizations });
+            setSnackbarOpen(false);
+            setTimeout(() => setSnackbarOpen(true), 100);
           }}
         >
           Adicionar no Carrinho - R$ {totalPrice.toFixed(2)}
@@ -203,14 +231,14 @@ const SelectPizza = () => {
         onUndo={
           lastAddedId
             ? () => {
-                removeItem(lastAddedId)
-                setSnackbarOpen(false)
+                removeItem(lastAddedId);
+                setSnackbarOpen(false);
               }
             : undefined
         }
       />
     </Container>
-  )
-}
+  );
+};
 
-export default SelectPizza
+export default SelectPizza;

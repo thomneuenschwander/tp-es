@@ -16,7 +16,7 @@ export class Pizza extends Model<
   declare tamanho: string;
   declare preco: number;
   declare descricao: string;
-  declare slug: string
+  declare slug: string;
 }
 
 Pizza.init({
@@ -47,3 +47,34 @@ Pizza.init({
   tableName: 'Pizza',
   timestamps: false
 });
+
+async function seedPizzas() {
+  try {
+    const count = await Pizza.count();
+    if (count === 0) {
+      await Pizza.bulkCreate([
+        {
+          nome: 'Margherita',
+          slug: 'margherita',
+          tamanho: 'M',
+          preco: 25.50,
+          descricao: 'Pizza de molho de tomate, queijo e manjericão',
+        },
+        {
+          nome: 'Pepperoni',
+          slug: 'pepperoni',
+          tamanho: 'G',
+          preco: 30.00,
+          descricao: 'Pizza de pepperoni com molho de tomate caseiro',
+        }
+      ]);
+      console.log('Pizzas adicionadas com sucesso!');
+    } else {
+      console.log('As pizzas já foram inseridas anteriormente.');
+    }
+  } catch (error) {
+    console.error('Erro ao inserir pizzas:', error);
+  }
+}
+
+seedPizzas();

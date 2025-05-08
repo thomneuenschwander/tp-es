@@ -13,6 +13,7 @@ export class ItemDePedido extends Model<
 > {
   declare idItemPedido: CreationOptional<number>;
   declare quantidade: number;
+  declare tamanho: string;
   declare idPedido: number;
   declare idPizza: number;
 }
@@ -25,6 +26,9 @@ ItemDePedido.init({
   },
   quantidade: {
     type: DataTypes.INTEGER
+  },
+  tamanho: {
+    type: DataTypes.STRING
   },
   idPedido: {
     type: DataTypes.INTEGER,
