@@ -6,13 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { useCart, CartItem } from '../contexts/CartContext';
 import BackButton from '../components/BackButton';
-import { loadStripe } from '@stripe/stripe-js';
 import { useAuth } from '../contexts/AuthContext';
-
-// Inicializa o Stripe com sua chave pública
-const stripePromise = loadStripe(
-  'pk_test_51RL9yzKpWMtTtEtQLH7xuo81i0fdXC9HFU7scb8u6XGdSg5mCAKpvwYAN2vwhTWIDVfqNCXwsEDWwZKBwYUS3VNH00HGCMTeZg',
-);
 
 const Cart = () => {
   const { items, removeItem, addItem, clearCart } = useCart();
@@ -50,6 +44,8 @@ const Cart = () => {
         .map((pizza) => ({
           quantidade: pizza.quantity,
           idPizza: pizza.idBack,
+          tamanho: pizza.size,
+          extras: pizza.extras || [],
         }));
 
       const bebidas = items
@@ -59,27 +55,24 @@ const Cart = () => {
           idBebida: bebida.idBack,
         }));
 
-      const adicionais = items
-        .filter((i) => i.type === 'pizza' && i.extras && i.extras.length > 0)
-        .flatMap((pizza) =>
-          (pizza.extras || []).map((extra) => ({
-            quantidade: pizza.quantity,
-            idAdicional: extra.idAdicional,
-          }))
-        );
-
       const payload = {
+        items: items.map((item) => ({
+          type: item.type,
+          flavor: item.type === 'pizza' ? item.flavor : undefined,
+          name: item.type === 'drink' ? item.name : undefined,
+          size: item.type === 'pizza' ? item.size : undefined,
+          price: item.price,
+          quantity: item.quantity,
+          idBack: item.idBack,
+          extras: item.type === 'pizza' ? item.extras : undefined,
+        })),
+        total,
         cpfCliente,
-        preco: total,
-        status: 'pendente',
-        endereco: 'Rua das Pizzas, 123',
+        endereco: 'Rua das Pizzas, 123', // Substitua por um endereço dinâmico, se disponível
         idRestaurante: 1,
-        itens,
-        bebidas,
-        adicionais,
       };
 
-      const response = await fetch('http://localhost:5000/pedidos/completo', {
+      const response = await fetch('http://localhost:5000/pagamentos/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,16 +82,14 @@ const Cart = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(`Erro ao criar pedido: ${JSON.stringify(error)}`);
+        throw new Error(`Erro ao criar sessão de pagamento: ${error.error}`);
       }
 
-      const pedidoCriado = await response.json();
-      console.log('✅ Pedido criado:', pedidoCriado);
-      alert('Pedido realizado com sucesso!');
-      clearCart();
+      const { url } = await response.json();
+      window.location.href = url; // Redireciona para a sessão do Stripe
     } catch (error: any) {
-      console.error('❌ Erro ao criar pedido:', error);
-      alert(`Erro ao criar pedido: ${error.message}`);
+      console.error('❌ Erro ao criar sessão de pagamento:', error);
+      alert(`Erro ao criar sessão de pagamento: ${error.message}`);
     } finally {
       setLoading(false);
     }

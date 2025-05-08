@@ -8,41 +8,40 @@ import {
   Container,
   Stack,
   Typography,
-} from '@mui/material'
-import { useState } from 'react'
-import { NewDrinkItem, useCart } from '../contexts/CartContext'
-import CartSnackbar from '../components/CartSnackbar'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import { useNavigate } from 'react-router-dom'
-import { useDrinks } from '../hooks/useDrinks'
+} from '@mui/material';
+import { useState } from 'react';
+import { NewDrinkItem, useCart } from '../contexts/CartContext';
+import CartSnackbar from '../components/CartSnackbar';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useNavigate } from 'react-router-dom';
+import { useDrinks } from '../hooks/useDrinks';
 
 const Drinks = () => {
-  const { addItem, removeItem } = useCart()
-  const navigate = useNavigate()
-  const [snackbarOpen, setSnackbarOpen] = useState(false)
-  const [addedDrink, setAddedDrink] = useState<string | null>(null)
-  const [lastAddedId, setLastAddedId] = useState<string | null>(null)
+  const { addItem, removeItem } = useCart();
+  const navigate = useNavigate();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [addedDrink, setAddedDrink] = useState<string | null>(null);
+  const [lastAddedId, setLastAddedId] = useState<string | null>(null);
 
-  const { data: drinks = [], isLoading } = useDrinks()
+  const { data: drinks = [], isLoading } = useDrinks();
 
   const handleAddDrink = (drink: any) => {
     const drinkItem: NewDrinkItem = {
       type: 'drink',
       name: drink.nome,
-      description: drink.descricao,
       price: drink.preco,
       image: drink.image,
       quantity: 1,
-      idBack: undefined,
-    }
+      idBack: drink.idBebida,
+    };
 
-    const id = addItem(drinkItem)
-    setLastAddedId(id)
-    setAddedDrink(drink.nome)
+    const id = addItem(drinkItem);
+    setLastAddedId(id);
+    setAddedDrink(drink.nome);
 
-    setSnackbarOpen(false)
-    setTimeout(() => setSnackbarOpen(true), 100)
-  }
+    setSnackbarOpen(false);
+    setTimeout(() => setSnackbarOpen(true), 100);
+  };
 
   return (
     <Container maxWidth="sm" sx={{ py: { xs: 4, sm: 8 } }}>
@@ -90,14 +89,14 @@ const Drinks = () => {
         onUndo={
           lastAddedId
             ? () => {
-                removeItem(lastAddedId)
-                setSnackbarOpen(false)
+                removeItem(lastAddedId);
+                setSnackbarOpen(false);
               }
             : undefined
         }
       />
     </Container>
-  )
-}
+  );
+};
 
-export default Drinks
+export default Drinks;

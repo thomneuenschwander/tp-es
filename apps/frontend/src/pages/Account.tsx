@@ -54,27 +54,18 @@ const Account = ({ toggleTheme, themeMode }: AccountProps) => {
     <Container maxWidth="sm" sx={{ py: { xs: 2, sm: 5 } }}>
       {/* ——— Preferências de tema ——— */}
       <Stack spacing={2} pb={2}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Box>
-            <Typography variant="subtitle1">
-              Modo {themeMode === 'light' ? 'claro' : 'escuro'}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Alterar tema do aplicativo
-            </Typography>
-          </Box>
+  <Stack direction="row" alignItems="center" justifyContent="space-between">
+    <Box>
+      <Typography variant="subtitle1">
+        Bem-vindo, {data?.nome || 'Usuário'}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        Gerencie sua conta.
+      </Typography>
+    </Box>
+  </Stack>
+</Stack>
 
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <LightIcon />
-            <Switch
-              checked={themeMode === 'dark'}
-              onChange={toggleTheme}
-              inputProps={{ 'aria-label': 'toggle theme' }}
-            />
-            <DarkIcon />
-          </Stack>
-        </Stack>
-      </Stack>
 
       <Divider />
 
@@ -125,20 +116,6 @@ const Account = ({ toggleTheme, themeMode }: AccountProps) => {
           </Typography>
         </Box>
         <Button size="small" onClick={() => navigate('/address')}>
-          Alterar
-        </Button>
-      </Paper>
-
-      {/* ——— Forma de pagamento (placeholder) ——— */}
-      <Paper variant="outlined" sx={{ p: 2, display: 'flex', gap: 2 }}>
-        <CardIcon color="action" sx={{ mt: 0.5 }} />
-        <Box flexGrow={1}>
-          <Typography variant="subtitle1">Forma de pagamento</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Nenhuma forma cadastrada
-          </Typography>
-        </Box>
-        <Button size="small" onClick={() => navigate('/payment-method')}>
           Alterar
         </Button>
       </Paper>

@@ -10,8 +10,8 @@ import Home from './pages/Home';
 import Cart from './pages/Cart';
 import SelectPizza from './pages/SelectPizza';
 import Drinks from './pages/Drinks';
-import PaymentMethod from './pages/PaymentMethod';
 import Stores from './pages/Stores';
+import Success from './pages/Success';
 
 const App = () => {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
@@ -90,8 +90,8 @@ const App = () => {
           <Route path='/cart' element={<Cart />} />
           <Route path='/pizzas' element={<SelectPizza />} />
           <Route path='/drinks' element={<Drinks />} />
-          <Route path='/payment-method' element={<PaymentMethod />} />
           <Route path="/stores" element={<Stores />} />
+          <Route path="/success" element={<Success />} />
         </Routes>
       </AppLayout>
     </ThemeProvider>

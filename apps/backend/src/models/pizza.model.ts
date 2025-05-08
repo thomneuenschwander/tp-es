@@ -13,7 +13,6 @@ export class Pizza extends Model<
 > {
   declare idPizza: CreationOptional<number>;
   declare nome: string;
-  declare tamanho: string;
   declare preco: number;
   declare descricao: string;
   declare slug: string;
@@ -31,9 +30,6 @@ Pizza.init({
   slug: {
     type: DataTypes.STRING(45),
     allowNull: false
-  },
-  tamanho: {
-    type: DataTypes.CHAR(2)
   },
   preco: {
     type: DataTypes.REAL
@@ -56,15 +52,13 @@ async function seedPizzas() {
         {
           nome: 'Margherita',
           slug: 'margherita',
-          tamanho: 'M',
-          preco: 25.50,
+          preco: 3.50,
           descricao: 'Pizza de molho de tomate, queijo e manjericão',
         },
         {
           nome: 'Pepperoni',
           slug: 'pepperoni',
-          tamanho: 'G',
-          preco: 30.00,
+          preco: 5.00,
           descricao: 'Pizza de pepperoni com molho de tomate caseiro',
         }
       ]);

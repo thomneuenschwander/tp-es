@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Pedido, ItemDePedido, BebidaDoPedido, AdicionalDePedido } from '../models';
+import { Pedido, ItemDePedido, BebidaDoPedido, AdicionalDePedido, Pizza, Bebida, Adicional } from '../models';
 import { sequelize } from '../config/database';
 
 export const PedidoController = {
@@ -83,7 +83,8 @@ export const PedidoController = {
             ItemDePedido.create({
               quantidade: item.quantidade,
               idPedido: pedido.idPedido,
-              idPizza: item.idPizza
+              idPizza: item.idPizza,
+              tamanho: ''
             }, { transaction })
           )
         );
@@ -150,25 +151,47 @@ export const PedidoController = {
         include: [
           {
             model: ItemDePedido,
-            include: ['Pizza'] // deve estar associado corretamente com Pizza
+            as: 'ItemDePedidos', 
+            include: [
+              {
+                model: Pizza,
+                as: 'Pizza', 
+              },
+            ],
           },
           {
             model: BebidaDoPedido,
-            include: ['Bebida']
-          }
-        ]
+            as: 'BebidaDoPedidos', 
+            include: [
+              {
+                model: Bebida,
+                as: 'Bebida', 
+              },
+            ],
+          },
+          {
+            model: AdicionalDePedido,
+            as: 'AdicionalDePedidos', 
+            include: [
+              {
+                model: Adicional,
+                as: 'Adicional', 
+              },
+            ],
+          },
+        ],
       });
-  
+
       if (!pedidos || pedidos.length === 0) {
         res.status(404).json({ error: 'Nenhum pedido encontrado para esse cliente' });
         return;
       }
-  
+
       res.json(pedidos);
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ error: 'Erro ao buscar pedidos', details: error });
+    } catch (error: any) {
+      console.error('Erro ao buscar pedidos:', error);
+      res.status(400).json({ error: 'Erro ao buscar pedidos', details: error.message });
     }
-  }
+  },
   
 };

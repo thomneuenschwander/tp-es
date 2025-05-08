@@ -12,10 +12,7 @@ export class TransacaoDePagamento extends Model<
   InferCreationAttributes<TransacaoDePagamento>
 > {
   declare idTransacaoPagamento: CreationOptional<number>;
-  declare metodoPagamento: string;
-  declare numeroCartao: string;
-  declare validadeCartao: string;
-  declare codigoCVC: string;
+  declare stripeSessionId: string;
   declare valor: number;
   declare pedidoIdPedido: number;
 }
@@ -26,17 +23,8 @@ TransacaoDePagamento.init({
     autoIncrement: true,
     primaryKey: true
   },
-  metodoPagamento: {
-    type: DataTypes.STRING(45)
-  },
-  numeroCartao: {
-    type: DataTypes.CHAR(16)
-  },
-  validadeCartao: {
-    type: DataTypes.CHAR(5)
-  },
-  codigoCVC: {
-    type: DataTypes.CHAR(3)
+  stripeSessionId: {
+    type: DataTypes.STRING()
   },
   valor: {
     type: DataTypes.REAL
