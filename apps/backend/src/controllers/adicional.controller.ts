@@ -17,22 +17,22 @@ export const AdicionalController = {
   },
 
   async findById(req: Request, res: Response) {
-    const { id } = req.params;
-    const result = await Adicional.findByPk(id);
+    const { idAdicional } = req.params;  // Use the correct parameter name (idAdicional)
+    const result = await Adicional.findByPk(idAdicional);
     if (result) return res.json(result);
     res.status(404).json({ error: 'Adicional não encontrado' });
   },
 
   async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const [updated] = await Adicional.update(req.body, { where: { id } });
+    const { idAdicional } = req.params;  // Use the correct parameter name (idAdicional)
+    const [updated] = await Adicional.update(req.body, { where: { idAdicional } });
     if (updated) return res.json({ message: 'Adicional atualizado com sucesso' });
     res.status(404).json({ error: 'Adicional não encontrado' });
   },
 
   async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    const deleted = await Adicional.destroy({ where: { id } });
+    const { idAdicional } = req.params;  // Use the correct parameter name (idAdicional)
+    const deleted = await Adicional.destroy({ where: { idAdicional } });
     if (deleted) return res.json({ message: 'Adicional removido com sucesso' });
     res.status(404).json({ error: 'Adicional não encontrado' });
   }

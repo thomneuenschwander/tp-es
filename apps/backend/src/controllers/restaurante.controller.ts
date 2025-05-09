@@ -24,15 +24,15 @@ export const RestauranteController = {
   },
 
   async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const [updated] = await Restaurante.update(req.body, { where: { id } });
+    const { idRestaurante } = req.params;
+    const [updated] = await Restaurante.update(req.body, { where: { idRestaurante } });
     if (updated) return res.json({ message: 'Restaurante atualizado com sucesso' });
     res.status(404).json({ error: 'Restaurante não encontrado' });
   },
 
   async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    const deleted = await Restaurante.destroy({ where: { id } });
+    const { idRestaurante } = req.params;
+    const deleted = await Restaurante.destroy({ where: { idRestaurante } });
     if (deleted) return res.json({ message: 'Restaurante removido com sucesso' });
     res.status(404).json({ error: 'Restaurante não encontrado' });
   }

@@ -24,15 +24,15 @@ export const PizzaController = {
   },
 
   async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const [updated] = await Pizza.update(req.body, { where: { id } });
+    const { idPizza } = req.params;
+    const [updated] = await Pizza.update(req.body, { where: { idPizza } });
     if (updated) return res.json({ message: 'Pizza atualizada com sucesso' });
     res.status(404).json({ error: 'Pizza não encontrada' });
   },
 
   async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    const deleted = await Pizza.destroy({ where: { id } });
+    const { idPizza } = req.params;
+    const deleted = await Pizza.destroy({ where: { idPizza } });
     if (deleted) return res.json({ message: 'Pizza removida com sucesso' });
     res.status(404).json({ error: 'Pizza não encontrada' });
   }

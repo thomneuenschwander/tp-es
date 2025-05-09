@@ -24,15 +24,15 @@ export const AdicionalDePedidoController = {
   },
 
   async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const [updated] = await AdicionalDePedido.update(req.body, { where: { id } });
+    const { idAdicionalPedido } = req.params;
+    const [updated] = await AdicionalDePedido.update(req.body, { where: { idAdicionalPedido } });
     if (updated) return res.json({ message: 'Adicional do pedido atualizado com sucesso' });
     res.status(404).json({ error: 'Adicional do pedido não encontrado' });
   },
 
   async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    const deleted = await AdicionalDePedido.destroy({ where: { id } });
+    const { idAdicionalPedido } = req.params;
+    const deleted = await AdicionalDePedido.destroy({ where: { idAdicionalPedido } });
     if (deleted) return res.json({ message: 'Adicional do pedido removido com sucesso' });
     res.status(404).json({ error: 'Adicional do pedido não encontrado' });
   }

@@ -43,32 +43,3 @@ Pizza.init({
   tableName: 'Pizza',
   timestamps: false
 });
-
-async function seedPizzas() {
-  try {
-    const count = await Pizza.count();
-    if (count === 0) {
-      await Pizza.bulkCreate([
-        {
-          nome: 'Margherita',
-          slug: 'margherita',
-          preco: 3.50,
-          descricao: 'Pizza de molho de tomate, queijo e manjericão',
-        },
-        {
-          nome: 'Pepperoni',
-          slug: 'pepperoni',
-          preco: 5.00,
-          descricao: 'Pizza de pepperoni com molho de tomate caseiro',
-        }
-      ]);
-      console.log('Pizzas adicionadas com sucesso!');
-    } else {
-      console.log('As pizzas já foram inseridas anteriormente.');
-    }
-  } catch (error) {
-    console.error('Erro ao inserir pizzas:', error);
-  }
-}
-
-seedPizzas();
