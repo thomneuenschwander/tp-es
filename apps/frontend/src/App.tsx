@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Landing, SigninWrapper, SignupWrapper } from './pages/Landing';
 import AppLayout from './components/AppLayout';
 import Account from './pages/Account';
-import AddressSelection from './pages/AddressSelection';
 import { useEffect, useMemo, useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material';
 import PastOrders from './pages/PastOrders';
@@ -85,7 +84,6 @@ const App = () => {
           </Route>
           <Route path='/home' element={<Home />} />
           <Route path="/account" element={<Account toggleTheme={toggleTheme} themeMode={mode}/>} />
-          <Route path="/address" element={<AddressSelection />} />
           <Route path='/orders' element={<PastOrders />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/pizzas' element={<SelectPizza />} />
