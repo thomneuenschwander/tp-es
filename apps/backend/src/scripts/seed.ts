@@ -1,121 +1,115 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' }); // ajuste se necessário
+import {
+  sequelize,
+  Cliente,
+  Restaurante,
+  Pizza,
+  Bebida,
+  Adicional
+} from '../models/index'; // ✅ Importa tudo centralizado via index.ts
 
-import { sequelize } from '../config/database';
-import { Cliente, Pizza, Bebida, Restaurante, Adicional } from '../models';
-
-async function seed() {
+export async function seed() {
   try {
-    console.log('🔍 Sequelize env vars:', {
-      DB_NAME: process.env.DB_NAME,
-      DB_USER: process.env.DB_USER,
-      DB_PASSWORD: process.env.DB_PASSWORD,
-      DB_HOST: process.env.DB_HOST,
-    });
-
-    await sequelize.authenticate();
-    console.log('✅ Conectado com sucesso');
 
     await sequelize.sync({ alter: true });
-    console.log('✅ Modelos sincronizados');
+    console.log('✅ Modelos sincronizados com o banco!');
 
-    await Cliente.create({
-      cpf: '11122233344',
-      nome: 'Usuário Teste',
-      email: 'teste@example.com',
-      senha: 'senha123',
-      telefone: '31999999999',
-    });
+    // Verifica se as tabelas estão vazias antes de popular
+    // 1. Cliente
+    const clienteCount = await Cliente.count();
+    let cliente;
+    if (clienteCount === 0) {
+      cliente = await Cliente.create({
+        cpf: '12345678901',
+        email: 'cliente@example.com',
+        senha: 'senha123',
+        nome: 'João Silva',
+        telefone: '31999999999'
+      });
+      console.log('✅ Cliente criado');
+    } else {
+      console.log('ℹ️ Tabela Cliente já populada');
+    }
 
-    console.log('✅ Cliente criado com sucesso!');
+    // 2. Restaurante
+    const restauranteCount = await Restaurante.count();
+    let restaurante, restauranteAdicional, restauranteAdicional2;
+    if (restauranteCount === 0) {
+      restaurante = await Restaurante.create({
+        nome: 'Pizza App - Savassi',
+        descricao: 'R. Cláudio Manoel, 1162 - Savassi, Belo Horizonte - MG',
+        latitude: -19.936039,
+        longitude: -43.932361
+      });
+      restauranteAdicional = await Restaurante.create({
+        nome: 'Pizza App - Centro',
+        descricao: 'Av. Afonso Pena, 1000 - Centro, Belo Horizonte - MG',
+        latitude: -19.9191,
+        longitude: -43.9383
+      });
+      restauranteAdicional2 = await Restaurante.create({
+        nome: 'Pizza App - Pampulha',
+        descricao: 'Av. Otacílio Negrão de Lima, 1000 - Pampulha, Belo Horizonte - MG',
+        latitude: -19.8661,
+        longitude: -43.9733
+      });
+      console.log('✅ Restaurantes criados');
+    } else {
+      console.log('ℹ️ Tabela Restaurante já populada');
+    }
 
-    await Pizza.bulkCreate([
-      {
-        nome: 'Margherita',
-        slug: 'margherita',
-        tamanho: 'M',
-        preco: 30,
-        descricao: 'Molho de tomate, muçarela e manjericão.'
-      },
-      {
-        nome: 'Pepperoni',
-        slug: 'pepperoni',
-        tamanho: 'M',
-        preco: 36,
-        descricao: 'Pepperoni crocante sobre queijo derretido.'
-      },
-      {
-        nome: 'Vegetariana',
-        slug: 'vegetarian',
-        tamanho: 'M',
-        preco: 34,
-        descricao: 'Mix de legumes frescos com muçarela.'
-      }
-    ]);
+    // 3. Pizza
+    const pizzaCount = await Pizza.count();
+    if (pizzaCount === 0) {
+      await Pizza.bulkCreate([
+        {
+          nome: 'Margherita',
+          slug: 'margherita',
+          preco: 3.50,
+          descricao: 'Pizza de molho de tomate, queijo e manjericão',
+        },
+        {
+          nome: 'Pepperoni',
+          slug: 'pepperoni',
+          preco: 5.00,
+          descricao: 'Pizza de pepperoni com molho de tomate caseiro',
+        }
+      ]);
+      console.log('✅ Pizzas criadas');
+    } else {
+      console.log('ℹ️ Tabela Pizza já populada');
+    }
 
-    console.log('✅ Pizzas criadas com sucesso!');
-
-    await Bebida.bulkCreate([
-      {
+    // 4. Bebida
+    const bebidaCount = await Bebida.count();
+    let bebida;
+    if (bebidaCount === 0) {
+      bebida = await Bebida.create({
         nome: 'Coca-Cola',
-        descricao: 'Refrigerante 350ml',
-        preco: 5.0,
-        imagem: '/images/coca.png'
-      },
-      {
-        nome: 'Suco de Laranja',
-        descricao: 'Suco natural gelado',
-        preco: 7.0,
-        imagem: '/images/orange_juice.png'
-      },
-      {
-        nome: 'Água Mineral',
-        descricao: 'Sem gás, 500ml',
-        preco: 3.5,
-        imagem: '/images/water.png'
-      }
-    ]);
-    
+        descricao: 'Refrigerante gelado',
+        preco: 9.5,
+        imagem: 'cocacola.png'
+      });
+      console.log('✅ Bebida criada');
+    } else {
+      console.log('ℹ️ Tabela Bebida já populada');
+    }
 
-    console.log('✅ Bebidas criadas com sucesso!');
-
-    await Restaurante.create({
-      nome: 'Pizza Master',
-      descricao: 'A melhor pizzaria da cidade',
-      latitude: -19.9245,
-      longitude: -43.9352
-    })    
-    
-    console.log('✅ Restaurante criado com sucesso!')
-
-    await Adicional.bulkCreate([
-      {
+    // 5. Adicional
+    const adicionalCount = await Adicional.count();
+    let adicional;
+    if (adicionalCount === 0) {
+      adicional = await Adicional.create({
         nome: 'Borda Recheada',
-        descricao: 'Borda de queijo catupiry',
-        preco: 6.0
-      },
-      {
-        nome: 'Extra Bacon',
-        descricao: 'Adicional de bacon crocante',
-        preco: 4.0
-      },
-      {
-        nome: 'Molho Especial',
-        descricao: 'Molho de alho artesanal',
-        preco: 3.0
-      },
-      {
-        nome: 'Azeitonas Pretas',
-        descricao: 'Azeitonas selecionadas',
-        preco: 2.5
-      }
-    ]);    
+        descricao: 'Borda com catupiry',
+        preco: 5.0
+      });
+      console.log('✅ Adicional criado');
+    } else {
+      console.log('ℹ️ Tabela Adicional já populada');
+    }
 
-    process.exit(0);
+    console.log('✅ Seed concluído com sucesso!');
   } catch (error) {
-    console.error('❌ Erro ao popular banco:', error);
-    process.exit(1);
+    console.error('❌ Erro ao executar seed:', error);
   }
 }
-
-seed();

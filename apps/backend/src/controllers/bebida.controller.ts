@@ -35,15 +35,15 @@ export const BebidaController = {
   },
 
   async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const [updated] = await Bebida.update(req.body, { where: { id } });
+    const { idBebida } = req.params;
+    const [updated] = await Bebida.update(req.body, { where: { idBebida } });
     if (updated) return res.json({ message: 'Bebida atualizada com sucesso' });
     res.status(404).json({ error: 'Bebida não encontrada' });
   },
 
   async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    const deleted = await Bebida.destroy({ where: { id } });
+    const { idBebida } = req.params;
+    const deleted = await Bebida.destroy({ where: { idBebida } });
     if (deleted) return res.json({ message: 'Bebida removida com sucesso' });
     res.status(404).json({ error: 'Bebida não encontrada' });
   }

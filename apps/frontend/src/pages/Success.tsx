@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import { useAuth } from '../contexts/AuthContext';
 
+const apiPort = import.meta.env.VITE_PORT;
+
 interface OrderDetails {
   idPedido: number;
   preco: number;
@@ -46,7 +48,7 @@ const Success = () => {
       }
 
       try {
-        const response = await fetch('http://localhost:5000/pagamentos/order-details', {
+        const response = await fetch(`http://localhost:${apiPort}/pagamentos/order-details`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ sessionId, cpfCliente: cpf }),

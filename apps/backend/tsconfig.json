@@ -7,6 +7,6 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["./src", "../frontend/src/hooks", "../frontend/src/hooks"],
+  "include": ["./src", "../backend/src/hooks", "../backend/src/hooks"],
   "exclude": ["dist"]
 }

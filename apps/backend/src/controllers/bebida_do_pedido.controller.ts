@@ -24,15 +24,15 @@ export const BebidaDoPedidoController = {
   },
 
   async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const [updated] = await BebidaDoPedido.update(req.body, { where: { id } });
+    const { idBebidaPedido } = req.params;
+    const [updated] = await BebidaDoPedido.update(req.body, { where: { idBebidaPedido } });
     if (updated) return res.json({ message: 'Bebida do pedido atualizada com sucesso' });
     res.status(404).json({ error: 'Bebida do pedido não encontrada' });
   },
 
   async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    const deleted = await BebidaDoPedido.destroy({ where: { id } });
+    const { idBebidaPedido } = req.params;
+    const deleted = await BebidaDoPedido.destroy({ where: { idBebidaPedido } });
     if (deleted) return res.json({ message: 'Bebida do pedido removida com sucesso' });
     res.status(404).json({ error: 'Bebida do pedido não encontrada' });
   }

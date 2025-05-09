@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Landing, SigninWrapper, SignupWrapper } from './pages/Landing';
 import AppLayout from './components/AppLayout';
 import Account from './pages/Account';
-import AddressSelection from './pages/AddressSelection';
 import { useEffect, useMemo, useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material';
 import PastOrders from './pages/PastOrders';
@@ -13,7 +12,9 @@ import Drinks from './pages/Drinks';
 import Stores from './pages/Stores';
 import Success from './pages/Success';
 
+const apiPort = import.meta.env.VITE_PORT;
 const App = () => {
+  console.log('API Port:', apiPort);
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   useEffect(() => {
     const savedMode = localStorage.getItem('theme-mode') as 'light' | 'dark' | null;
@@ -85,7 +86,6 @@ const App = () => {
           </Route>
           <Route path='/home' element={<Home />} />
           <Route path="/account" element={<Account toggleTheme={toggleTheme} themeMode={mode}/>} />
-          <Route path="/address" element={<AddressSelection />} />
           <Route path='/orders' element={<PastOrders />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/pizzas' element={<SelectPizza />} />

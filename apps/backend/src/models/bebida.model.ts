@@ -42,32 +42,3 @@ Bebida.init({
   tableName: 'Bebida',
   timestamps: false
 });
-
-async function seedBebidas() {
-  try {
-    const count = await Bebida.count();
-    if (count === 0) {
-      await Bebida.bulkCreate([
-        {
-          nome: 'Coca-Cola',
-          descricao: 'Refrigerante de cola',
-          preco: 5.50,
-          imagem: 'coca-cola.jpg'
-        },
-        {
-          nome: 'Pepsi',
-          descricao: 'Refrigerante de cola',
-          preco: 5.00,
-          imagem: 'pepsi.png'
-        }
-      ]);
-      console.log('Bebidas adicionadas com sucesso!');
-    } else {
-      console.log('As bebidas já foram inseridas anteriormente.');
-    }
-  } catch (error) {
-    console.error('Erro ao inserir bebidas:', error);
-  }
-}
-
-seedBebidas();

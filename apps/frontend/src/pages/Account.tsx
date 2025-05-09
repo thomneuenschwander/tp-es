@@ -106,20 +106,6 @@ const Account = ({ toggleTheme, themeMode }: AccountProps) => {
         </Button>
       </Stack>
 
-      {/* ——— Endereço (placeholder para detalhe/futuro) ——— */}
-      <Paper variant="outlined" sx={{ p: 2, display: 'flex', gap: 2, mb: 2 }}>
-        <LocationIcon color="primary" sx={{ mt: 0.5 }} />
-        <Box flexGrow={1}>
-          <Typography variant="subtitle1">Endereço atual</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {data?.endereco || 'Nenhum endereço cadastrado'}
-          </Typography>
-        </Box>
-        <Button size="small" onClick={() => navigate('/address')}>
-          Alterar
-        </Button>
-      </Paper>
-
       <Divider sx={{ my: 2 }} />
 
       {/* ——— Logout ——— */}

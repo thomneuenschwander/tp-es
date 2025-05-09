@@ -89,7 +89,7 @@ const SelectPizza = () => {
         Escolha seus sabores de Pizza
       </Typography>
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Grid sx={{ display: 'flex', flexDirection: 'column' }}>
           <Stack spacing={{ xs: 2, sm: 4 }}>
             <FormControl>
               <FormLabel>Selecione o Tamanho da sua pizza</FormLabel>
@@ -150,12 +150,7 @@ const SelectPizza = () => {
           </Stack>
         </Grid>
 
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
-        >
+        <Grid sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <Box sx={{ width: '100%', maxWidth: { xs: '100%', sm: 'calc(100% - 32px)' } }}>
             <Typography fontWeight={500} gutterBottom color="text.secondary">
               Escolha seu sabor de Pizza

@@ -24,15 +24,15 @@ export const ItemDePedidoController = {
   },
 
   async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const [updated] = await ItemDePedido.update(req.body, { where: { id } });
+    const { idItemPedido } = req.params;
+    const [updated] = await ItemDePedido.update(req.body, { where: { idItemPedido } });
     if (updated) return res.json({ message: 'Item de pedido atualizado com sucesso' });
     res.status(404).json({ error: 'Item de pedido não encontrado' });
   },
 
   async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    const deleted = await ItemDePedido.destroy({ where: { id } });
+    const { idItemPedido } = req.params;
+    const deleted = await ItemDePedido.destroy({ where: { idItemPedido } });
     if (deleted) return res.json({ message: 'Item de pedido removido com sucesso' });
     res.status(404).json({ error: 'Item de pedido não encontrado' });
   }
