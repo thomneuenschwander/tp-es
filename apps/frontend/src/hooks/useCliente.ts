@@ -2,7 +2,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
-const api = axios.create({ baseURL: 'http://localhost:5000' });
+const apiPort = import.meta.env.VITE_PORT;
+
+const api = axios.create({ baseURL: `http://localhost:${apiPort}` });
 
 export const useCliente = (cpf: string | null) => {
   const qc = useQueryClient();

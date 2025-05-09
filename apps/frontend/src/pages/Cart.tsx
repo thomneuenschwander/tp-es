@@ -20,6 +20,11 @@ import { useCart, CartItem } from '../contexts/CartContext';
 import BackButton from '../components/BackButton';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import { Icon } from 'leaflet';
+
+const apiPort = import.meta.env.VITE_PORT;
 
 interface NominatimResponse {
   lat: string;
@@ -34,6 +39,23 @@ interface Restaurante {
   longitude: number;
 }
 
+// Correção para o ícone do marcador
+const defaultIcon = new Icon({
+  iconUrl: '/images/marker-icon.png',
+  shadowUrl: '/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+// Helper component to update map center dynamically
+const MapCenterUpdater = ({ center }: { center: [number, number] }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, 13);
+  }, [center, map]);
+  return null;
+};
+
 const Cart = () => {
   const { items, removeItem, addItem, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
@@ -42,6 +64,7 @@ const Cart = () => {
   const [isAddressValid, setIsAddressValid] = useState<boolean | null>(null);
   const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null);
   const [validatingAddress, setValidatingAddress] = useState(false);
+  const [closestRestaurant, setClosestRestaurant] = useState<Restaurante | null>(null);
 
   const updateQuantity = (id: string, delta: number) => {
     const item = items.find((i) => i.id === id);
@@ -62,6 +85,7 @@ const Cart = () => {
     if (!address || address.trim() === '') {
       setIsAddressValid(null);
       setCoordinates(null);
+      setClosestRestaurant(null);
       return;
     }
 
@@ -87,13 +111,36 @@ const Cart = () => {
         };
         setCoordinates(coords);
         console.log('Coordenadas do endereço:', coords);
+
+        // Fetch restaurants to find the closest
+        const restaurantResponse = await axios.get<Restaurante[]>(`http://localhost:${apiPort}/restaurantes`);
+        const restaurants = restaurantResponse.data;
+
+        let minDistance = Infinity;
+        let closest: Restaurante | null = null;
+
+        if (restaurants.length > 0) {
+          restaurants.forEach((restaurant) => {
+            const distance = Math.sqrt(
+              Math.pow(coords.lat - restaurant.latitude, 2) +
+              Math.pow(coords.lon - restaurant.longitude, 2)
+            );
+            if (distance < minDistance) {
+              minDistance = distance;
+              closest = restaurant;
+            }
+          });
+          setClosestRestaurant(closest);
+        }
       } else {
         setCoordinates(null);
+        setClosestRestaurant(null);
       }
     } catch (error: unknown) {
       console.error('Erro ao validar endereço:', error);
       setIsAddressValid(false);
       setCoordinates(null);
+      setClosestRestaurant(null);
     } finally {
       setValidatingAddress(false);
     }
@@ -139,29 +186,7 @@ const Cart = () => {
           idBebida: bebida.idBack,
         }));
 
-      // Fetch the list of restaurants
-      const response = await axios.get<Restaurante[]>('http://localhost:5000/restaurantes');
-      const restaurants = response.data;
-
-      // Find the closest restaurant
-      let closestRestaurant: Restaurante | null = null as Restaurante | null;
-      let minDistance = Infinity;
-
-      if (coordinates && restaurants.length > 0) {
-        restaurants.forEach((restaurant) => {
-          const distance = Math.sqrt(
-            Math.pow(coordinates.lat - restaurant.latitude, 2) +
-            Math.pow(coordinates.lon - restaurant.longitude, 2)
-          );
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestRestaurant = restaurant;
-          }
-        });
-      }
-
-      // Ensure idRestaurante is always a number
-      const idRestaurante = closestRestaurant?.idRestaurante ?? 1; // Use optional chaining and nullish coalescing
+      const idRestaurante = closestRestaurant?.idRestaurante ?? 1;
 
       const payload = {
         items: items.map((item) => ({
@@ -181,7 +206,7 @@ const Cart = () => {
         idRestaurante: idRestaurante,
       };
 
-      const responsePayment = await fetch('http://localhost:5000/pagamentos/create-checkout-session', {
+      const responsePayment = await fetch(`http://localhost:${apiPort}/pagamentos/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -297,8 +322,41 @@ const Cart = () => {
             </Box>
             {coordinates !== null && (
               <Typography variant="body2" color="text.secondary">
-                Coordenadas: Lat {coordinates.lat.toFixed(6)}, Lon {coordinates.lon.toFixed(6)}
+                Coordenadas do seu endereço: Lat {coordinates.lat.toFixed(6)}, Lon {coordinates.lon.toFixed(6)}
               </Typography>
+            )}
+            {isAddressValid && coordinates && closestRestaurant && (
+              <>
+                <Typography variant="subtitle1" mb={1}>
+                  Localização da loja que irá preparar seu pedido:
+                </Typography>
+                <Box sx={{ mt: 2, height: '300px', width: '100%', borderRadius: '8px', overflow: 'hidden' }}>
+                  <MapContainer
+                    center={[closestRestaurant.latitude, closestRestaurant.longitude]} // Initial center (will be updated by MapCenterUpdater)
+                    zoom={13}
+                    style={{ height: '100%', width: '100%' }}
+                  >
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    <MapCenterUpdater center={[closestRestaurant.latitude, closestRestaurant.longitude]} />
+                    <Marker
+                      position={[closestRestaurant.latitude, closestRestaurant.longitude]}
+                      icon={defaultIcon}
+                    >
+                      <Popup>
+                        <Typography variant="subtitle2" fontWeight="bold">
+                          {closestRestaurant.nome}
+                        </Typography>
+                        <Typography variant="body2">
+                          {closestRestaurant.descricao}
+                        </Typography>
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
+                </Box>
+              </>
             )}
           </Box>
 

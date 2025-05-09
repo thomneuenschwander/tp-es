@@ -12,7 +12,9 @@ import Drinks from './pages/Drinks';
 import Stores from './pages/Stores';
 import Success from './pages/Success';
 
+const apiPort = import.meta.env.VITE_PORT;
 const App = () => {
+  console.log('API Port:', apiPort);
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   useEffect(() => {
     const savedMode = localStorage.getItem('theme-mode') as 'light' | 'dark' | null;

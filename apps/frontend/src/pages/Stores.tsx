@@ -5,6 +5,8 @@ import { Icon } from 'leaflet';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const apiPort = import.meta.env.VITE_PORT;
+
 // Interface para o tipo Restaurante
 interface Restaurante {
   idRestaurante: number;
@@ -29,7 +31,7 @@ const Stores = () => {
   useEffect(() => {
     const fetchRestaurantes = async () => {
       try {
-        const response = await axios.get<Restaurante[]>('http://localhost:5000/restaurantes');
+        const response = await axios.get<Restaurante[]>(`http://localhost:${apiPort}/restaurantes`);
         setRestaurantes(response.data);
         
         // Atualiza o centro do mapa para o primeiro restaurante, se existir
