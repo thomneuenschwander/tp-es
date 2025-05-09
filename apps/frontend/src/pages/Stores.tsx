@@ -29,7 +29,7 @@ const Stores = () => {
   useEffect(() => {
     const fetchRestaurantes = async () => {
       try {
-        const response = await axios.get<Restaurante[]>('http://localhost:3000/restaurantes');
+        const response = await axios.get<Restaurante[]>('http://localhost:5000/restaurantes');
         setRestaurantes(response.data);
         
         // Atualiza o centro do mapa para o primeiro restaurante, se existir

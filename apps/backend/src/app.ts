@@ -8,9 +8,9 @@ const app = express();
 
 app.use(cors());
 
-seed();
-
 app.use(express.json());
+
+seed();
 
 registerRoutes(app);
 

@@ -109,7 +109,6 @@ export async function seed() {
     }
 
     console.log('✅ Seed concluído com sucesso!');
-    await sequelize.close();
   } catch (error) {
     console.error('❌ Erro ao executar seed:', error);
   }
