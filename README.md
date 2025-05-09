@@ -17,6 +17,7 @@ Seja você um terráqueo faminto ou um viajante espacial esfomeado, o PizzaPlane
 - Node.js (versão 18 ou superior)
 - npm (gerenciador de pacotes do Node.js)
 - Git
+- Postgresql
 
 ## Estrutura do Projeto
 
@@ -41,18 +42,21 @@ npm install
 
 3. Configure as variáveis de ambiente:
 
-Crie um arquivo .env na pasta apps/backend com as seguintes variáveis:
+Crie um arquivo .env na raiz do diretório (ao lado da pasta apps) com as seguintes variáveis:
 
 | Variable            | Value                                                                 |
-|---------------------|----------------------------------------------------------------------|
-| `DB_NAME`           | pizzaPlanet                                                          |
-| `DB_USER`           | postgres                                                             |
-| `DB_PASSWORD`       | ####                                                                 |
-| `DB_HOST`           | localhost                                                            |
-| `STRIPE_SECRET_KEY` | sk_test_51RLvA5CmGkQRBsakR3xERXUmNhsQh2cmFKRIUpHFGRDoq7L7W1as2M7IQUX0RtbVuafKjnLIrjnDiXjBDurrv5ek00KCMOqNb3 |
-| `PORT`              | 5000  
+|---------------------|-----------------------------------------------------------------------|
+| `DB_NAME`           | pizzaPlanet                                                           |
+| `DB_USER`           | postgres                                                              |
+| `DB_PASSWORD`       | ####                                                                  |
+| `DB_HOST`           | localhost                                                             |
+| `STRIPE_SECRET_KEY` sk_test_51RLvA5CmGkQRBsakR3xERXUmNhsQh2cmFKRIUpHFGRDoq7L7W1as2M7IQUX0RtbVuafKjnLIrjnDiXjBDurrv5ek00KCMOqNb3 |
+| `PORT`              | 5923                                                                  |
+| `VITE_PORT`         | 5923                                                                  |
 
 Observação: A chave secreta do Stripe (STRIPE_SECRET_KEY) foi gerada em uma conta de teste e pode ser utilizada para funcionar no seu ambiente de desenvolvimento.
+
+4. Crie um banco de dados local postgresql com o nome "pizzaPlanet" com o usuário "postgres" e com a senha que definiu na variavel ambiente "DB_PASSWORD".
 
 ## Executando o Projeto
 
