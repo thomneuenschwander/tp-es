@@ -50,7 +50,7 @@ Crie um arquivo .env na pasta apps/backend com as seguintes variáveis:
 | `DB_PASSWORD`       | ####                                                                 |
 | `DB_HOST`           | localhost                                                            |
 | `STRIPE_SECRET_KEY` | sk_test_51RLvA5CmGkQRBsakR3xERXUmNhsQh2cmFKRIUpHFGRDoq7L7W1as2M7IQUX0RtbVuafKjnLIrjnDiXjBDurrv5ek00KCMOqNb3 |
-| `PORT`              | 3000  
+| `PORT`              | 5000  
 
 Observação: A chave secreta do Stripe (STRIPE_SECRET_KEY) foi gerada em uma conta de teste e pode ser utilizada para funcionar no seu ambiente de desenvolvimento.
 
