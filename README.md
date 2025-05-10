@@ -17,7 +17,7 @@ Seja você um terráqueo faminto ou um viajante espacial esfomeado, o PizzaPlane
 - Node.js (versão 18 ou superior)
 - npm (gerenciador de pacotes do Node.js)
 - Git
-- Postgresql
+- PostgreSql
 
 ## Estrutura do Projeto
 
