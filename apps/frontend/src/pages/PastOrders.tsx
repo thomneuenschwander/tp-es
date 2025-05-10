@@ -66,6 +66,8 @@ interface Pedido {
   AdicionalDePedidos: AdicionalDePedido[];
 }
 
+const apiPort = import.meta.env.VITE_PORT;
+
 const PastOrders = () => {
   const cpf = localStorage.getItem('cpf');
 
@@ -73,7 +75,7 @@ const PastOrders = () => {
     queryKey: ['pedidos', cpf],
     enabled: !!cpf,
     queryFn: async () => {
-      const { data } = await axios.get<Pedido[]>(`http://localhost:5000/pedidos/cliente/${cpf}`);
+      const { data } = await axios.get<Pedido[]>(`http://localhost:${apiPort}/pedidos/cliente/${cpf}`);
       console.log('Pedidos retornados:', data);
       return data;
     },
