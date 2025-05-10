@@ -50,7 +50,7 @@ Crie um arquivo .env na raiz do diretório (ao lado da pasta apps) com as seguin
 | `DB_USER`           | postgres                                                              |
 | `DB_PASSWORD`       | ####                                                                  |
 | `DB_HOST`           | localhost                                                             |
-| `STRIPE_SECRET_KEY` sk_test_51RLvA5CmGkQRBsakR3xERXUmNhsQh2cmFKRIUpHFGRDoq7L7W1as2M7IQUX0RtbVuafKjnLIrjnDiXjBDurrv5ek00KCMOqNb3 |
+| `STRIPE_SECRET_KEY` | sk_test_51RLvA5CmGkQRBsakR3xERXUmNhsQh2cmFKRIUpHFGRDoq7L7W1as2M7IQUX0RtbVuafKjnLIrjnDiXjBDurrv5ek00KCMOqNb3 |
 | `PORT`              | 5923                                                                  |
 | `VITE_PORT`         | 5923                                                                  |
 
