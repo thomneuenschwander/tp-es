@@ -32,7 +32,7 @@ O projeto está organizado em uma estrutura monorepo com os seguintes diretório
 1. Clone o repositório:
 bash
 git clone https://github.com/thomneuenschwander/tp-es.git
-cd tp-es
+cd tp-es2
 
 
 2. Instale as dependências do projeto:
