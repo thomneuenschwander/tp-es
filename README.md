@@ -60,37 +60,27 @@ Observação: A chave secreta do Stripe (STRIPE_SECRET_KEY) foi gerada em uma co
 
 ## Executando o Projeto
 
-### Desenvolvimento
+### Scripts Disponíveis no Diretório Raiz
+Os seguintes scripts podem ser executados diretamente no diretório raiz do projeto:
 
-Para executar o frontend e backend em modo de desenvolvimento:
+- `npm run dev:frontend`  
+  Inicia o frontend em modo de desenvolvimento.  
+- `npm run dev:backend`  
+  Inicia o backend em modo de desenvolvimento, executando automaticamente o script de seed para popular o banco de dados com dados iniciais.
+
+### Modo de Desenvolvimento (Opcional: Dentro das Pastas)
+Se preferir, você pode iniciar o frontend e o backend em modo de desenvolvimento entrando nas respectivas pastas:
 
 1. Inicie o backend:
 bash
-cd backend
+cd apps/backend
 npm run dev
 
 
 2. Em outro terminal, inicie o frontend:
 bash
-cd frontend
+cd apps/frontend
 npm run dev
-
-
-O frontend estará disponível em http://localhost:3000 e o backend em http://localhost:3001.
-
-### Seed do Banco de Dados
-
-Para popular o banco de dados com dados iniciais:
-
-bash
-npm run seed:backend
-
-
-## Scripts Disponíveis
-
-- npm run dev:frontend: Inicia o frontend em modo de desenvolvimento
-- npm run dev:backend: Inicia o backend em modo de desenvolvimento
-- npm run seed:backend: Executa o script de seed do banco de dados
 
 
 ## Tecnologias Principais
